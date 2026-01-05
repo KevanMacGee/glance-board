@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { format, isToday, isTomorrow, addDays, parseISO, isAfter, isBefore } from "date-fns";
+import { format, isToday, isTomorrow } from "date-fns";
 
 interface CalendarEvent {
   id: string;
@@ -11,68 +11,19 @@ interface CalendarEvent {
   isAllDay: boolean;
 }
 
-// Mock events for demonstration
-const getMockEvents = (): CalendarEvent[] => {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-  return [
-    {
-      id: "1",
-      title: "Dad — Primary Care Appointment",
-      start: addDays(today, 0),
-      end: addDays(today, 0),
-      location: "Example Medicine",
-      description: "Bring insurance card",
-      isAllDay: false,
-    },
-    {
-      id: "2",
-      title: "Pharmacy Pickup",
-      start: new Date(today.getTime() + 14 * 60 * 60 * 1000 + 15 * 60 * 1000),
-      end: new Date(today.getTime() + 15 * 60 * 60 * 1000),
-      location: "Pharmacy — Monroe Ave",
-      description: "Order #4821",
-      isAllDay: false,
-    },
-    {
-      id: "3",
-      title: "Physical Therapy",
-      start: new Date(addDays(today, 1).getTime() + 9 * 60 * 60 * 1000),
-      end: new Date(addDays(today, 1).getTime() + 10 * 60 * 60 * 1000),
-      location: "Example PT",
-      description: "Wear sneakers",
-      isAllDay: false,
-    },
-    {
-      id: "4",
-      title: "Dentist",
-      start: new Date(addDays(today, 3).getTime() + 13 * 60 * 60 * 1000 + 40 * 60 * 1000),
-      end: new Date(addDays(today, 3).getTime() + 14 * 60 * 60 * 1000 + 40 * 60 * 1000),
-      location: "Example Dental",
-      description: "Arrive 10 min early",
-      isAllDay: false,
-    },
-    {
-      id: "5",
-      title: "Grocery Delivery Window",
-      start: new Date(addDays(today, 5).getTime() + 15 * 60 * 60 * 1000),
-      end: new Date(addDays(today, 5).getTime() + 17 * 60 * 60 * 1000),
-      location: "Wegmans",
-      description: "Leave cooler on porch",
-      isAllDay: false,
-    },
-    {
-      id: "6",
-      title: "Car Service",
-      start: new Date(addDays(today, 7).getTime() + 10 * 60 * 60 * 1000),
-      end: new Date(addDays(today, 7).getTime() + 12 * 60 * 60 * 1000),
-      location: "Auto shop",
-      description: "Drop keys at desk",
-      isAllDay: false,
-    },
-  ];
-};
+interface APIResponse {
+  events: Array<{
+    id: string;
+    title: string;
+    start: string;
+    end: string;
+    allDay: boolean;
+    location?: string;
+    description?: string;
+  }>;
+  lastUpdated: string;
+  isStale: boolean;
+}
 
 const formatEventTime = (date: Date, isAllDay: boolean): string => {
   if (isAllDay) return "All day";
@@ -97,26 +48,30 @@ const AppointmentsList = () => {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
+  const [isStale, setIsStale] = useState(false);
 
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      // In production, this would call the backend API
-      // For now, use mock events
-      const mockEvents = getMockEvents();
+      const response = await fetch("/api/events");
+      const data: APIResponse = await response.json();
 
-      // Filter to next 14 days and sort by start time
-      const now = new Date();
-      const fourteenDaysFromNow = addDays(now, 14);
+      const parsedEvents: CalendarEvent[] = data.events.map((e) => ({
+        id: e.id,
+        title: e.title,
+        start: new Date(e.start),
+        end: new Date(e.end),
+        location: e.location,
+        description: e.description,
+        isAllDay: e.allDay,
+      }));
 
-      const filteredEvents = mockEvents
-        .filter((event) => isAfter(event.start, addDays(now, -1)) && isBefore(event.start, fourteenDaysFromNow))
-        .sort((a, b) => a.start.getTime() - b.start.getTime());
-
-      setEvents(filteredEvents);
-      setLastUpdated(new Date());
+      setEvents(parsedEvents);
+      setLastUpdated(new Date(data.lastUpdated));
+      setIsStale(data.isStale);
     } catch (error) {
       console.error("Failed to fetch events:", error);
+      setIsStale(true);
     } finally {
       setLoading(false);
     }
@@ -140,8 +95,13 @@ const AppointmentsList = () => {
   return (
     <section className="gb-panel flex flex-col h-full" aria-label="Appointments">
       <header className="px-6 pt-6 pb-4 flex items-end justify-between gap-4">
-        <div>
+        <div className="flex items-center gap-3">
           <h2 className="gb-header-title">Appointments</h2>
+          {isStale && (
+            <span className="text-xs text-amber-400/70" title="Using cached data">
+              ⚠
+            </span>
+          )}
         </div>
         {loading && <span className="gb-pill animate-pulse-soft">Updating...</span>}
       </header>

@@ -1,73 +1,93 @@
-# Welcome to your Lovable project
+# Glance Board
 
-## Project info
+A wall calendar display for Linux Mint kiosk mode. Shows live clock, weather, and Google Calendar events.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Quick Start
 
-## How can I edit this code?
+### 1. Install dependencies
 
-There are several ways of editing your application.
+```bash
+npm install
+```
 
-**Use Lovable**
+### 2. Configure environment
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+```bash
+cp .env.example .env
+```
 
-Changes made via Lovable will be committed automatically to this repo.
+Edit `.env` and set your Google Calendar ICS URL:
 
-**Use your preferred IDE**
+```
+GOOGLE_ICAL_URL=https://calendar.google.com/calendar/ical/your-secret-url/basic.ics
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+**To get your ICS URL:**
+1. Go to [Google Calendar](https://calendar.google.com)
+2. Click the gear icon → Settings
+3. Select your calendar on the left
+4. Scroll to "Integrate calendar"
+5. Copy "Secret address in iCal format"
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 3. Run
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+**Development (with hot reload):**
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+**Production:**
+```bash
+npm run build
+npm start
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+The app runs at `http://localhost:3000` (or your configured PORT).
 
-**Use GitHub Codespaces**
+## Kiosk Mode (Linux Mint)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Open in fullscreen kiosk mode:
 
-## What technologies are used for this project?
+```bash
+chromium --kiosk http://localhost:3000
+```
 
-This project is built with:
+Or with Chromium flags for a clean display:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+chromium --kiosk --noerrdialogs --disable-infobars --disable-session-crashed-bubble http://localhost:3000
+```
 
-## How can I deploy this project?
+### Auto-start on boot
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Create a startup script:
 
-## Can I connect a custom domain to my Lovable project?
+```bash
+#!/bin/bash
+cd /path/to/glance-board
+npm start &
+sleep 5
+chromium --kiosk http://localhost:3000
+```
 
-Yes, you can!
+## Environment Variables
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | Server port | `3000` |
+| `GOOGLE_ICAL_URL` | Google Calendar secret ICS URL | (required) |
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Features
+
+- **Live Clock** - Updates every second
+- **Weather** - Rochester, NY weather, refreshes hourly
+- **Calendar** - Shows next 14 days of events from Google Calendar
+- **Caching** - Calendar data cached for 1 hour; serves stale data if fetch fails
+- **Single Process** - One Node server handles both frontend and API
+
+## Tech Stack
+
+- React + Vite (frontend)
+- Express (backend)
+- node-ical (ICS parsing)
+- Tailwind CSS (styling)
