@@ -1,13 +1,23 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import ClockDisplay from "@/components/ClockDisplay";
+import WeatherDisplay from "@/components/WeatherDisplay";
+import AppointmentsList from "@/components/AppointmentsList";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <main 
+      className="h-screen p-7 grid gap-[22px]"
+      style={{ gridTemplateColumns: "0.44fr 0.56fr" }}
+      aria-label="Glance Board - Kitchen wall calendar"
+    >
+      {/* Left Column - Clock & Weather */}
+      <section className="gb-panel flex flex-col gap-[18px] p-[22px]" aria-label="Status column">
+        <ClockDisplay />
+        <WeatherDisplay />
+      </section>
+
+      {/* Right Column - Appointments */}
+      <AppointmentsList />
+    </main>
   );
 };
 
