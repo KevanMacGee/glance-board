@@ -147,6 +147,14 @@
     letter-spacing: -0.02em;
   }
 
+  /* Extra large time display */
+  .gb-time-xl {
+    font-size: 160px;
+    line-height: 0.9;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+  }
+
   /* Date display */
   .gb-date {
     font-size: 42px;
@@ -155,6 +163,29 @@
     display: flex;
     align-items: center;
     gap: 10px;
+  }
+
+  /* Extra large date display */
+  .gb-date-xl {
+    font-size: clamp(38px, 4vw, 58px);
+    font-weight: 700;
+    line-height: 1.1;
+    color: hsl(var(--gb-muted));
+  }
+
+  @media (min-width: 980px) {
+    .gb-date-xl {
+      white-space: nowrap;
+    }
+  }
+
+  /* Large accent dot */
+  .gb-dot-lg {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: hsl(var(--gb-accent-mint));
+    flex: 0 0 auto;
   }
 
   /* Accent dot */
@@ -298,6 +329,14 @@
   
   .gb-time {
     font-size: 64px;
+  }
+
+  .gb-time-xl {
+    font-size: 80px;
+  }
+
+  .gb-date-xl {
+    font-size: 36px;
   }
   
   .gb-temp {

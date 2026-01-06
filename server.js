@@ -39,7 +39,7 @@ async function fetchAndParseICS() {
     const data = await ical.async.fromURL(GOOGLE_ICAL_URL);
     
     const nowDate = new Date();
-    const fourteenDaysFromNow = new Date(nowDate.getTime() + 14 * 24 * 60 * 60 * 1000);
+    const thirtyDaysFromNow = new Date(nowDate.getTime() + 30 * 24 * 60 * 60 * 1000);
     const startOfToday = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate());
     
     const events = [];
@@ -64,8 +64,8 @@ async function fetchAndParseICS() {
         end = new Date(end);
       }
       
-      // Filter: only events from today through 14 days from now
-      if (start < startOfToday || start > fourteenDaysFromNow) {
+      // Filter: only events from today through 30 days from now
+      if (start < startOfToday || start > thirtyDaysFromNow) {
         continue;
       }
       

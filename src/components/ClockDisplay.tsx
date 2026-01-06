@@ -13,21 +13,19 @@ const ClockDisplay = () => {
   }, []);
 
   const timeString = format(currentTime, "h:mm");
-  const dateString = format(currentTime, "EEEE, MMMM d");
+  const dayOfWeek = format(currentTime, "EEEE,");
+  const monthAndDay = format(currentTime, "MMMM d");
 
   return (
-    <div className="gb-section flex-1 flex flex-col">
-      <div className="gb-kicker">
-        <span>Kitchen Display</span>
-      </div>
-
-      <div className="flex flex-col gap-3 flex-1 justify-center">
-        <div className="gb-time" aria-label="Current time">
+    <div className="gb-section flex-1 flex flex-col justify-center py-0">
+      <div className="flex flex-col gap-2">
+        <div className="gb-time-xl" aria-label="Current time">
           {timeString}
         </div>
-        <div className="gb-date" aria-label="Current date">
-          <span className="gb-dot" aria-hidden="true"></span>
-          <span>{dateString}</span>
+        <div className="gb-date-xl flex items-center gap-3" aria-label="Current date">
+          <span className="gb-dot-lg" aria-hidden="true"></span>
+          <span>{dayOfWeek}</span>
+          <span>{monthAndDay}</span>
         </div>
       </div>
     </div>
