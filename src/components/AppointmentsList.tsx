@@ -96,10 +96,15 @@ const AppointmentsList = () => {
   });
   const [isInitialLoad, setIsInitialLoad] = useState(() => !loadCachedEvents());
   const [isStale, setIsStale] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchEvents = async (isBackground = false) => {
+  const fetchEvents = async (isBackground = false, forceRefresh = false) => {
+    if (forceRefresh) {
+      setIsRefreshing(true);
+    }
     try {
-      const response = await fetch("/api/events");
+      const url = forceRefresh ? "/api/events?force=true" : "/api/events";
+      const response = await fetch(url);
       const data: APIResponse = await response.json();
 
       const parsedEvents: CalendarEvent[] = data.events.map((e) => ({
@@ -123,6 +128,7 @@ const AppointmentsList = () => {
       if (!isBackground) {
         setIsInitialLoad(false);
       }
+      setIsRefreshing(false);
     }
   };
 
@@ -199,8 +205,15 @@ const AppointmentsList = () => {
         </div>
       </div>
 
-      <footer className="px-6 py-3 gb-note border-t border-border/[0.08]">
+      <footer className="px-6 py-3 gb-note border-t border-border/[0.08] flex justify-between items-center">
         <span>Updated {formatLastUpdatedTime()}</span>
+        <button 
+          onClick={() => fetchEvents(false, true)}
+          disabled={isRefreshing}
+          className="gb-note hover:text-white/70 transition-colors cursor-pointer disabled:opacity-50"
+        >
+          {isRefreshing ? "Updating..." : "Update Now"}
+        </button>
       </footer>
     </section>
   );

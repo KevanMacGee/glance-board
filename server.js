@@ -21,7 +21,7 @@ let eventsCache = {
 let lastFetchTime = 0;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
 
-async function fetchAndParseICS() {
+async function fetchAndParseICS(forceRefresh = false) {
   if (!GOOGLE_ICAL_URL) {
     console.warn('GOOGLE_ICAL_URL not set - returning empty events');
     return { events: [], lastUpdated: new Date().toISOString(), isStale: false };
@@ -29,8 +29,8 @@ async function fetchAndParseICS() {
 
   const now = Date.now();
   
-  // Return cached if fresh
-  if (eventsCache.lastUpdated && (now - lastFetchTime) < CACHE_DURATION) {
+  // Return cached if fresh (unless force refresh)
+  if (!forceRefresh && eventsCache.lastUpdated && (now - lastFetchTime) < CACHE_DURATION) {
     return eventsCache;
   }
 
@@ -111,7 +111,8 @@ async function createServer() {
   // API routes
   app.get('/api/events', async (req, res) => {
     try {
-      const result = await fetchAndParseICS();
+      const forceRefresh = req.query.force === 'true';
+      const result = await fetchAndParseICS(forceRefresh);
       res.json(result);
     } catch (error) {
       console.error('API error:', error);
