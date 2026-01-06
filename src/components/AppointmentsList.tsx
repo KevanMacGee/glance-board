@@ -25,6 +25,47 @@ interface APIResponse {
   isStale: boolean;
 }
 
+interface CachedData {
+  events: CalendarEvent[];
+  lastUpdated: string;
+  cachedAt: number;
+}
+
+const EVENTS_CACHE_KEY = "glance-board-events";
+const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
+
+const loadCachedEvents = (): CachedData | null => {
+  try {
+    const cached = localStorage.getItem(EVENTS_CACHE_KEY);
+    if (cached) {
+      const data = JSON.parse(cached);
+      // Rehydrate Date objects
+      data.events = data.events.map((e: CalendarEvent & { start: string; end: string }) => ({
+        ...e,
+        start: new Date(e.start),
+        end: new Date(e.end),
+      }));
+      return data;
+    }
+  } catch {
+    // Ignore cache errors
+  }
+  return null;
+};
+
+const saveCachedEvents = (events: CalendarEvent[], lastUpdated: Date) => {
+  try {
+    const data: CachedData = {
+      events,
+      lastUpdated: lastUpdated.toISOString(),
+      cachedAt: Date.now(),
+    };
+    localStorage.setItem(EVENTS_CACHE_KEY, JSON.stringify(data));
+  } catch {
+    // Ignore cache errors
+  }
+};
+
 const formatEventTime = (date: Date, isAllDay: boolean): string => {
   if (isAllDay) return "All day";
   return format(date, "h:mm");
@@ -45,13 +86,18 @@ const formatEventDay = (date: Date): string => {
 };
 
 const AppointmentsList = () => {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  const [loading, setLoading] = useState(false);
+  const [events, setEvents] = useState<CalendarEvent[]>(() => {
+    const cached = loadCachedEvents();
+    return cached?.events || [];
+  });
+  const [lastUpdated, setLastUpdated] = useState<Date>(() => {
+    const cached = loadCachedEvents();
+    return cached ? new Date(cached.lastUpdated) : new Date();
+  });
+  const [isInitialLoad, setIsInitialLoad] = useState(() => !loadCachedEvents());
   const [isStale, setIsStale] = useState(false);
 
-  const fetchEvents = async () => {
-    setLoading(true);
+  const fetchEvents = async (isBackground = false) => {
     try {
       const response = await fetch("/api/events");
       const data: APIResponse = await response.json();
@@ -69,19 +115,32 @@ const AppointmentsList = () => {
       setEvents(parsedEvents);
       setLastUpdated(new Date(data.lastUpdated));
       setIsStale(data.isStale);
+      saveCachedEvents(parsedEvents, new Date(data.lastUpdated));
     } catch (error) {
       console.error("Failed to fetch events:", error);
       setIsStale(true);
     } finally {
-      setLoading(false);
+      if (!isBackground) {
+        setIsInitialLoad(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchEvents();
+    // Check if cache is fresh enough
+    const cached = loadCachedEvents();
+    const now = Date.now();
+    const cacheAge = cached ? now - cached.cachedAt : Infinity;
+
+    // Only fetch if cache is stale (older than 1 hour)
+    if (cacheAge > CACHE_DURATION) {
+      fetchEvents(!!cached); // Background fetch if we have cached data
+    } else {
+      setIsInitialLoad(false);
+    }
 
     // Refresh every hour
-    const interval = setInterval(fetchEvents, 60 * 60 * 1000);
+    const interval = setInterval(() => fetchEvents(true), CACHE_DURATION);
     return () => clearInterval(interval);
   }, []);
 
@@ -103,7 +162,7 @@ const AppointmentsList = () => {
             </span>
           )}
         </div>
-        {loading && <span className="gb-pill animate-pulse-soft">Updating...</span>}
+        {isInitialLoad && <span className="gb-pill animate-pulse-soft">Loading...</span>}
       </header>
 
       <div className="px-6 pb-4 flex-1 overflow-auto gb-scroll" role="list" aria-label="Appointment list">
@@ -134,7 +193,7 @@ const AppointmentsList = () => {
             </article>
           ))}
 
-          {events.length === 0 && !loading && (
+          {events.length === 0 && !isInitialLoad && (
             <div className="text-center py-12 text-gb-faint">No upcoming appointments</div>
           )}
         </div>

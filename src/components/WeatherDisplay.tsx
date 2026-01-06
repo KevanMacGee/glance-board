@@ -92,18 +92,47 @@ const WeatherIcon = ({ description }: { description: string }) => {
   );
 };
 
-const WeatherDisplay = () => {
-  const [weather, setWeather] = useState<WeatherData>({
-    temp: 28,
-    description: "Partly cloudy",
-    high: 33,
-    low: 21,
-    lastUpdated: new Date(),
-  });
-  const [loading, setLoading] = useState(false);
+const WEATHER_CACHE_KEY = "glance-board-weather";
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
-  const fetchWeather = async () => {
-    setLoading(true);
+const loadCachedWeather = (): WeatherData | null => {
+  try {
+    const cached = localStorage.getItem(WEATHER_CACHE_KEY);
+    if (cached) {
+      const data = JSON.parse(cached);
+      return {
+        ...data,
+        lastUpdated: new Date(data.lastUpdated),
+      };
+    }
+  } catch {
+    // Ignore cache errors
+  }
+  return null;
+};
+
+const saveCachedWeather = (data: WeatherData) => {
+  try {
+    localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(data));
+  } catch {
+    // Ignore cache errors
+  }
+};
+
+const WeatherDisplay = () => {
+  const [weather, setWeather] = useState<WeatherData>(() => {
+    const cached = loadCachedWeather();
+    return cached || {
+      temp: 28,
+      description: "Partly cloudy",
+      high: 33,
+      low: 21,
+      lastUpdated: new Date(),
+    };
+  });
+  const [isInitialLoad, setIsInitialLoad] = useState(() => !loadCachedWeather());
+
+  const fetchWeather = async (isBackground = false) => {
     try {
       // Default to Rochester, NY coordinates
       const lat = 43.1566;
@@ -136,27 +165,42 @@ const WeatherDisplay = () => {
         
         const description = weatherCodes[data.current.weather_code] || "Partly cloudy";
         
-        setWeather({
+        const newWeather = {
           temp: Math.round(data.current.temperature_2m),
           description,
           high: Math.round(data.daily.temperature_2m_max[0]),
           low: Math.round(data.daily.temperature_2m_min[0]),
           lastUpdated: new Date(),
-        });
+        };
+        
+        setWeather(newWeather);
+        saveCachedWeather(newWeather);
       }
     } catch (error) {
       console.error("Failed to fetch weather:", error);
       // Keep cached data on error
     } finally {
-      setLoading(false);
+      if (!isBackground) {
+        setIsInitialLoad(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchWeather();
+    // Check if cache is fresh enough
+    const cached = loadCachedWeather();
+    const now = Date.now();
+    const cacheAge = cached ? now - cached.lastUpdated.getTime() : Infinity;
     
-    // Refresh every hour
-    const interval = setInterval(fetchWeather, 60 * 60 * 1000);
+    // Only fetch if cache is stale (older than 10 minutes)
+    if (cacheAge > CACHE_DURATION) {
+      fetchWeather(!!cached); // Background fetch if we have cached data
+    } else {
+      setIsInitialLoad(false);
+    }
+    
+    // Refresh every 10 minutes
+    const interval = setInterval(() => fetchWeather(true), CACHE_DURATION);
     return () => clearInterval(interval);
   }, []);
 
@@ -171,7 +215,7 @@ const WeatherDisplay = () => {
     <div className="gb-section flex-1 flex flex-col">
       <div className="gb-kicker">
         <span>Weather</span>
-        {loading && <span className="gb-pill animate-pulse-soft">Updating...</span>}
+        {isInitialLoad && <span className="gb-pill animate-pulse-soft">Loading...</span>}
       </div>
 
       <div className="grid grid-cols-[1fr_auto] gap-6 items-center flex-1">
