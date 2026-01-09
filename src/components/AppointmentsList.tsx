@@ -72,17 +72,23 @@ const formatEventTime = (date: Date, isAllDay: boolean): string => {
 };
 
 const formatEventDay = (date: Date): string => {
-  if (isToday(date)) return "Today";
-  if (isTomorrow(date)) return "Tomorrow";
+  return format(date, "EEE"); // e.g., "Tues"
+};
 
-  const now = new Date();
-  const daysDiff = Math.floor((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+const formatDateNum = (date: Date): string => {
+  const day = date.getDate();
+  const suffix = getOrdinalSuffix(day);
+  return `${day}${suffix}`;
+};
 
-  if (daysDiff < 7) {
-    return format(date, "EEE");
-  }
+const getOrdinalSuffix = (n: number): string => {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return s[(v - 20) % 10] || s[v] || s[0];
+};
 
-  return format(date, "MMM d");
+const formatMonth = (date: Date): string => {
+  return format(date, "MMM"); // e.g., "Jan"
 };
 
 const AppointmentsList = () => {
@@ -176,8 +182,14 @@ const AppointmentsList = () => {
           {events.map((event) => (
             <article key={event.id} className="gb-event" role="listitem">
               <div className="gb-event-time">
-                <div className="gb-event-time-value">{formatEventTime(event.start, event.isAllDay)}</div>
-                <div className="gb-event-time-label">{formatEventDay(event.start)}</div>
+                <div className="gb-event-date-col">
+                  <div className="gb-event-date-num">{formatDateNum(event.start)}</div>
+                  <div className="gb-event-date-month">{formatMonth(event.start)}</div>
+                </div>
+                <div className="gb-event-time-col">
+                  <div className="gb-event-time-value">{formatEventTime(event.start, event.isAllDay)}</div>
+                  <div className="gb-event-time-label">{formatEventDay(event.start)}</div>
+                </div>
               </div>
               <div className="min-w-0 flex flex-col gap-1.5">
                 <div className="gb-event-title">{event.title}</div>

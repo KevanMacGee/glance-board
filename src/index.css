@@ -242,25 +242,47 @@
     align-items: center;
   }
 
-  /* Event time column */
+  /* Event time/date 2x2 grid */
   .gb-event-time {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 4px 12px;
+    align-items: center;
+  }
+
+  .gb-event-date-col,
+  .gb-event-time-col {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 2px;
     text-align: center;
+  }
+
+  .gb-event-date-num {
+    font-weight: 800;
+    font-size: 26px;
+    letter-spacing: -0.01em;
+  }
+
+  .gb-event-date-month {
+    font-size: 16px;
+    font-weight: 600;
+    color: hsl(var(--gb-muted));
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
   .gb-event-time-value {
     font-weight: 800;
-    font-size: 28px;
+    font-size: 26px;
     letter-spacing: -0.01em;
   }
 
   .gb-event-time-label {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
     color: hsl(var(--gb-muted));
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
