@@ -237,7 +237,7 @@
     border-radius: 16px;
     padding: 18px 20px;
     display: grid;
-    grid-template-columns: 90px 1fr;
+    grid-template-columns: 115px 1fr;
     gap: 20px;
     align-items: center;
   }
@@ -246,7 +246,7 @@
   .gb-event-time {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 6px;
     text-align: center;
   }
 
@@ -257,7 +257,8 @@
   }
 
   .gb-event-time-label {
-    font-size: 15px;
+    font-size: 20px;
+    font-weight: 600;
     color: hsl(var(--gb-muted));
     letter-spacing: 0.08em;
     text-transform: uppercase;
