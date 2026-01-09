@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Preview</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .icon-card {
+            background-color: #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #3a3a3a;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .icon-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border-color: #555;
+        }
+        .icon-card img {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 15px;
+        }
+        .icon-name {
+            font-size: 0.9rem;
+            color: #aaa;
+            text-align: center;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>SVG Icons Preview</h1>
+    <div class="grid-container">
+        <div class="icon-card">
+            <img src="clear-day%20(1).svg" alt="clear-day (1).svg">
+            <div class="icon-name">clear-day (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="clear-day.svg" alt="clear-day.svg">
+            <div class="icon-name">clear-day.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="clear-night.svg" alt="clear-night.svg">
+            <div class="icon-name">clear-night.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="cloudy.svg" alt="cloudy.svg">
+            <div class="icon-name">cloudy.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="drizzle.svg" alt="drizzle.svg">
+            <div class="icon-name">drizzle.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="dust-day.svg" alt="dust-day.svg">
+            <div class="icon-name">dust-day.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="dust-night.svg" alt="dust-night.svg">
+            <div class="icon-name">dust-night.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="dust-wind.svg" alt="dust-wind.svg">
+            <div class="icon-name">dust-wind.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="dust.svg" alt="dust.svg">
+            <div class="icon-name">dust.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="hail.svg" alt="hail.svg">
+            <div class="icon-name">hail.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="haze-day.svg" alt="haze-day.svg">
+            <div class="icon-name">haze-day.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="haze-night.svg" alt="haze-night.svg">
+            <div class="icon-name">haze-night.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="haze.svg" alt="haze.svg">
+            <div class="icon-name">haze.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="hurricane.svg" alt="hurricane.svg">
+            <div class="icon-name">hurricane.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="mist.svg" alt="mist.svg">
+            <div class="icon-name">mist.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="moonrise.svg" alt="moonrise.svg">
+            <div class="icon-name">moonrise.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="moonset.svg" alt="moonset.svg">
+            <div class="icon-name">moonset.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day%20(1).svg" alt="overcast-day (1).svg">
+            <div class="icon-name">overcast-day (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day%20(2).svg" alt="overcast-day (2).svg">
+            <div class="icon-name">overcast-day (2).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day%20(3).svg" alt="overcast-day (3).svg">
+            <div class="icon-name">overcast-day (3).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day-drizzle.svg" alt="overcast-day-drizzle.svg">
+            <div class="icon-name">overcast-day-drizzle.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day-fog.svg" alt="overcast-day-fog.svg">
+            <div class="icon-name">overcast-day-fog.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day-hail.svg" alt="overcast-day-hail.svg">
+            <div class="icon-name">overcast-day-hail.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day-haze.svg" alt="overcast-day-haze.svg">
+            <div class="icon-name">overcast-day-haze.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day-rain.svg" alt="overcast-day-rain.svg">
+            <div class="icon-name">overcast-day-rain.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day-sleet.svg" alt="overcast-day-sleet.svg">
+            <div class="icon-name">overcast-day-sleet.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day-smoke.svg" alt="overcast-day-smoke.svg">
+            <div class="icon-name">overcast-day-smoke.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day-snow.svg" alt="overcast-day-snow.svg">
+            <div class="icon-name">overcast-day-snow.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-day.svg" alt="overcast-day.svg">
+            <div class="icon-name">overcast-day.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-drizzle%20(1).svg" alt="overcast-drizzle (1).svg">
+            <div class="icon-name">overcast-drizzle (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-drizzle.svg" alt="overcast-drizzle.svg">
+            <div class="icon-name">overcast-drizzle.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-fog%20(1).svg" alt="overcast-fog (1).svg">
+            <div class="icon-name">overcast-fog (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-fog%20(2).svg" alt="overcast-fog (2).svg">
+            <div class="icon-name">overcast-fog (2).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-fog.svg" alt="overcast-fog.svg">
+            <div class="icon-name">overcast-fog.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-hail%20(1).svg" alt="overcast-hail (1).svg">
+            <div class="icon-name">overcast-hail (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-hail.svg" alt="overcast-hail.svg">
+            <div class="icon-name">overcast-hail.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-haze%20(1).svg" alt="overcast-haze (1).svg">
+            <div class="icon-name">overcast-haze (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-haze%20(2).svg" alt="overcast-haze (2).svg">
+            <div class="icon-name">overcast-haze (2).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-haze.svg" alt="overcast-haze.svg">
+            <div class="icon-name">overcast-haze.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night%20(1).svg" alt="overcast-night (1).svg">
+            <div class="icon-name">overcast-night (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night%20(2).svg" alt="overcast-night (2).svg">
+            <div class="icon-name">overcast-night (2).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-drizzle%20(1).svg" alt="overcast-night-drizzle (1).svg">
+            <div class="icon-name">overcast-night-drizzle (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-drizzle.svg" alt="overcast-night-drizzle.svg">
+            <div class="icon-name">overcast-night-drizzle.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-fog%20(1).svg" alt="overcast-night-fog (1).svg">
+            <div class="icon-name">overcast-night-fog (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-fog.svg" alt="overcast-night-fog.svg">
+            <div class="icon-name">overcast-night-fog.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-hail%20(1).svg" alt="overcast-night-hail (1).svg">
+            <div class="icon-name">overcast-night-hail (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-hail.svg" alt="overcast-night-hail.svg">
+            <div class="icon-name">overcast-night-hail.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-haze%20(1).svg" alt="overcast-night-haze (1).svg">
+            <div class="icon-name">overcast-night-haze (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-haze.svg" alt="overcast-night-haze.svg">
+            <div class="icon-name">overcast-night-haze.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-rain%20(1).svg" alt="overcast-night-rain (1).svg">
+            <div class="icon-name">overcast-night-rain (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-rain.svg" alt="overcast-night-rain.svg">
+            <div class="icon-name">overcast-night-rain.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-sleet%20(1).svg" alt="overcast-night-sleet (1).svg">
+            <div class="icon-name">overcast-night-sleet (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-sleet.svg" alt="overcast-night-sleet.svg">
+            <div class="icon-name">overcast-night-sleet.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-smoke%20(1).svg" alt="overcast-night-smoke (1).svg">
+            <div class="icon-name">overcast-night-smoke (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-smoke.svg" alt="overcast-night-smoke.svg">
+            <div class="icon-name">overcast-night-smoke.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-snow%20(1).svg" alt="overcast-night-snow (1).svg">
+            <div class="icon-name">overcast-night-snow (1).svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night-snow.svg" alt="overcast-night-snow.svg">
+            <div class="icon-name">overcast-night-snow.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-night.svg" alt="overcast-night.svg">
+            <div class="icon-name">overcast-night.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-rain.svg" alt="overcast-rain.svg">
+            <div class="icon-name">overcast-rain.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast-sleet.svg" alt="overcast-sleet.svg">
+            <div class="icon-name">overcast-sleet.svg</div>
+        </div>
+        <div class="icon-card">
+            <img src="overcast.svg" alt="overcast.svg">
+            <div class="icon-name">overcast.svg</div>
+        </div>
+    </div>
+</body>
+</html>
