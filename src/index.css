@@ -238,7 +238,7 @@
     padding: 18px 20px;
     display: grid;
     grid-template-columns: 115px 1fr;
-    gap: 20px;
+    gap: 32px;
     align-items: center;
   }
 
