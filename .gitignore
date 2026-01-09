@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .specstory
+ignore
 
 # Environment variables
 .env
