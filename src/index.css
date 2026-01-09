@@ -222,13 +222,8 @@
 
   /* Weather icon container */
   .gb-weather-icon {
-    width: 140px;
-    height: 140px;
-    border-radius: 24px;
-    background: hsl(var(--gb-card-inner));
     display: grid;
     place-items: center;
-    font-size: 72px;
   }
 
   /* Event card */

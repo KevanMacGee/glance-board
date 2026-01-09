@@ -14,7 +14,7 @@ const WeatherIcon = ({ description }: { description: string }) => {
   
   if (desc.includes("clear") || desc.includes("sunny")) {
     return (
-      <svg viewBox="0 0 64 64" className="w-20 h-20">
+      <svg viewBox="0 0 64 64" className="w-full h-full">
         <circle cx="32" cy="32" r="12" className="fill-amber-400" />
         <g className="stroke-amber-400" strokeWidth="3" fill="none">
           <line x1="32" y1="6" x2="32" y2="14" />
@@ -32,7 +32,7 @@ const WeatherIcon = ({ description }: { description: string }) => {
   
   if (desc.includes("partly") || desc.includes("few clouds") || desc.includes("mainly clear")) {
     return (
-      <svg viewBox="0 0 64 64" className="w-20 h-20">
+      <svg viewBox="0 0 64 64" className="w-full h-full">
         <circle cx="20" cy="22" r="10" className="fill-amber-400" />
         <path d="M48 52H22a12 12 0 01-2.2-23.8A16 16 0 0152 34a10 10 0 01-4 18z" className="fill-slate-300" />
       </svg>
@@ -41,7 +41,7 @@ const WeatherIcon = ({ description }: { description: string }) => {
   
   if (desc.includes("cloud") || desc.includes("overcast")) {
     return (
-      <svg viewBox="0 0 64 64" className="w-20 h-20 fill-slate-400">
+      <svg viewBox="0 0 64 64" className="w-full h-full fill-slate-400">
         <path d="M50 50H18a14 14 0 01-2.5-27.8A18 18 0 0154 30a12 12 0 01-4 20z" />
       </svg>
     );
@@ -49,7 +49,7 @@ const WeatherIcon = ({ description }: { description: string }) => {
   
   if (desc.includes("rain") || desc.includes("drizzle")) {
     return (
-      <svg viewBox="0 0 64 64" className="w-20 h-20">
+      <svg viewBox="0 0 64 64" className="w-full h-full">
         <path d="M48 40H20a12 12 0 01-2.2-23.8A16 16 0 0150 24a10 10 0 01-2 16z" className="fill-slate-400" />
         <g className="fill-blue-400">
           <ellipse cx="24" cy="50" rx="2" ry="4" />
@@ -62,7 +62,7 @@ const WeatherIcon = ({ description }: { description: string }) => {
   
   if (desc.includes("snow")) {
     return (
-      <svg viewBox="0 0 64 64" className="w-20 h-20">
+      <svg viewBox="0 0 64 64" className="w-full h-full">
         <path d="M48 40H20a12 12 0 01-2.2-23.8A16 16 0 0150 24a10 10 0 01-2 16z" className="fill-slate-400" />
         <g className="fill-white">
           <circle cx="24" cy="50" r="3" />
@@ -75,7 +75,7 @@ const WeatherIcon = ({ description }: { description: string }) => {
   
   if (desc.includes("fog") || desc.includes("mist")) {
     return (
-      <svg viewBox="0 0 64 64" className="w-20 h-20 fill-slate-400">
+      <svg viewBox="0 0 64 64" className="w-full h-full fill-slate-400">
         <path d="M48 36H20a10 10 0 01-2-19.8A14 14 0 0150 22a8 8 0 01-2 14z" />
         <rect x="12" y="42" width="40" height="3" rx="1.5" opacity="0.6" />
         <rect x="16" y="50" width="32" height="3" rx="1.5" opacity="0.4" />
@@ -85,7 +85,7 @@ const WeatherIcon = ({ description }: { description: string }) => {
   
   // Default - partly cloudy
   return (
-    <svg viewBox="0 0 64 64" className="w-20 h-20">
+    <svg viewBox="0 0 64 64" className="w-full h-full">
       <circle cx="20" cy="22" r="10" className="fill-amber-400" />
       <path d="M48 52H22a12 12 0 01-2.2-23.8A16 16 0 0152 34a10 10 0 01-4 18z" className="fill-slate-300" />
     </svg>
@@ -212,32 +212,30 @@ const WeatherDisplay = () => {
   };
 
   return (
-    <div className="gb-section flex-1 flex flex-col">
-      <div className="gb-kicker">
+    <div className="gb-section flex-1 flex flex-col relative overflow-hidden">
+      <div className="gb-kicker relative z-10">
         <span>Weather</span>
         {isInitialLoad && <span className="gb-pill animate-pulse-soft">Loading...</span>}
       </div>
 
-      <div className="grid grid-cols-[1fr_auto] gap-6 items-center flex-1">
-        <div className="flex flex-col gap-4 min-w-0 justify-center">
-          <div className="flex items-baseline gap-4 flex-wrap">
-            <div className="gb-temp" aria-label="Current temperature">
-              {weather.temp}°
-            </div>
-            <div className="gb-weather-desc">{weather.description}</div>
-          </div>
-          <div className="gb-weather-hl" aria-label="High and low">
-            <span>High {weather.high}°</span>
-            <span>Low {weather.low}°</span>
-          </div>
-        </div>
+      <div className="absolute top-1/2 -translate-y-1/2 right-4 w-56 h-56 pointer-events-none" aria-hidden="true">
+        <WeatherIcon description={weather.description} />
+      </div>
 
-        <div className="gb-weather-icon" aria-hidden="true" title="Weather icon">
-          <WeatherIcon description={weather.description} />
+      <div className="flex flex-col gap-4 min-w-0 justify-center flex-1 relative z-10">
+        <div className="flex items-baseline gap-4 flex-wrap">
+          <div className="gb-temp" aria-label="Current temperature">
+            {weather.temp}°
+          </div>
+          <div className="gb-weather-desc">{weather.description}</div>
+        </div>
+        <div className="gb-weather-hl" aria-label="High and low">
+          <span>High {weather.high}°</span>
+          <span>Low {weather.low}°</span>
         </div>
       </div>
 
-      <div className="gb-note mt-3 flex items-center justify-between">
+      <div className="gb-note mt-3 flex items-center justify-between relative z-10">
         <span>Rochester, NY</span>
         <span>Updated {formatLastUpdated()}</span>
       </div>
