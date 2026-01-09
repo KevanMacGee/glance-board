@@ -237,8 +237,8 @@
     border-radius: 16px;
     padding: 18px 20px;
     display: grid;
-    grid-template-columns: 115px 1fr;
-    gap: 32px;
+    grid-template-columns: 125px 1fr;
+    gap: 40px;
     align-items: center;
   }
 
@@ -246,7 +246,7 @@
   .gb-event-time {
     display: grid;
     grid-template-columns: auto auto;
-    gap: 4px 12px;
+    gap: 0 10px;
     align-items: center;
   }
 
@@ -254,35 +254,39 @@
   .gb-event-time-col {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0;
     text-align: center;
   }
 
   .gb-event-date-num {
-    font-weight: 800;
-    font-size: 26px;
-    letter-spacing: -0.01em;
+    font-weight: 500;
+    font-size: 34px;
+    line-height: 1;
+    letter-spacing: 0.01em;
   }
 
   .gb-event-date-month {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.2;
     color: hsl(var(--gb-muted));
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   .gb-event-time-value {
-    font-weight: 800;
-    font-size: 26px;
-    letter-spacing: -0.01em;
+    font-weight: 500;
+    font-size: 34px;
+    line-height: 1;
+    letter-spacing: 0.01em;
   }
 
   .gb-event-time-label {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.2;
     color: hsl(var(--gb-muted));
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
