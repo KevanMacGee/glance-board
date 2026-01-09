@@ -1,93 +1,96 @@
 # Glance Board
 
-A wall calendar display for Linux Mint kiosk mode. Shows live clock, weather, and Google Calendar events.
+A minimalist dashboard designed for wall-mounted displays. Shows the time, weather, and upcoming calendar events at a glance.
 
-## Quick Start
+![React](https://img.shields.io/badge/React-18-blue) ![Vite](https://img.shields.io/badge/Vite-5-purple) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 
-### 1. Install dependencies
+## Features
+
+- **Live Clock** — Current time and date, updates every second
+- **Weather** — Temperature, conditions, and daily high/low from Open-Meteo
+- **Calendar** — Upcoming events from Google Calendar (via ICS feed)
+- **Offline-First** — Caches data locally; gracefully handles network issues
+- **Kiosk Ready** — Designed for fullscreen display on dedicated screens
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- A Google Calendar (or any calendar with an ICS URL)
+
+### Installation
 
 ```bash
 npm install
 ```
 
-### 2. Configure environment
+### Configuration
+
+Create a `.env` file in the project root:
+
+```env
+GOOGLE_ICAL_URL=https://calendar.google.com/calendar/ical/.../basic.ics
+PORT=3000
+```
+
+**Finding your ICS URL:**
+
+1. Open [Google Calendar Settings](https://calendar.google.com)
+2. Select your calendar → *Integrate calendar*
+3. Copy the *Secret address in iCal format*
+
+### Running
+
+**Development:**
 
 ```bash
-cp .env.example .env
-```
-
-Edit `.env` and set your Google Calendar ICS URL:
-
-```
-GOOGLE_ICAL_URL=https://calendar.google.com/calendar/ical/your-secret-url/basic.ics
-```
-
-**To get your ICS URL:**
-1. Go to [Google Calendar](https://calendar.google.com)
-2. Click the gear icon → Settings
-3. Select your calendar on the left
-4. Scroll to "Integrate calendar"
-5. Copy "Secret address in iCal format"
-
-### 3. Run
-
-**Development (with hot reload):**
-```bash
-npm run dev
+node server.js
 ```
 
 **Production:**
+
 ```bash
 npm run build
-npm start
+NODE_ENV=production node server.js
 ```
 
-The app runs at `http://localhost:3000` (or your configured PORT).
+The app will be available at `http://localhost:3000`.
 
-## Kiosk Mode (Linux Mint)
+## Kiosk Mode
 
-Open in fullscreen kiosk mode:
+For a wall-mounted display, run in fullscreen kiosk mode:
 
 ```bash
-chromium --kiosk http://localhost:3000
+chromium --kiosk --noerrdialogs --disable-infobars http://localhost:3000
 ```
 
-Or with Chromium flags for a clean display:
+### Auto-start on Boot (Linux)
 
-```bash
-chromium --kiosk --noerrdialogs --disable-infobars --disable-session-crashed-bubble http://localhost:3000
-```
-
-### Auto-start on boot
-
-Create a startup script:
-
-```bash
-#!/bin/bash
-cd /path/to/glance-board
-npm start &
-sleep 5
-chromium --kiosk http://localhost:3000
-```
-
-## Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | Server port | `3000` |
-| `GOOGLE_ICAL_URL` | Google Calendar secret ICS URL | (required) |
-
-## Features
-
-- **Live Clock** - Updates every second
-- **Weather** - Rochester, NY weather, refreshes hourly
-- **Calendar** - Shows next 14 days of events from Google Calendar
-- **Caching** - Calendar data cached for 1 hour; serves stale data if fetch fails
-- **Single Process** - One Node server handles both frontend and API
+Create a startup script or systemd service to launch both the server and browser on boot.
 
 ## Tech Stack
 
-- React + Vite (frontend)
-- Express (backend)
-- node-ical (ICS parsing)
-- Tailwind CSS (styling)
+| Layer | Technology |
+|-------|------------|
+| Frontend | React, TypeScript, Tailwind CSS |
+| Backend | Express, node-ical |
+| Build | Vite |
+
+## Project Structure
+
+```
+├── server.js           # Express server + API
+├── src/
+│   ├── components/
+│   │   ├── ClockDisplay.tsx
+│   │   ├── WeatherDisplay.tsx
+│   │   └── AppointmentsList.tsx
+│   └── pages/
+│       └── Index.tsx   # Main dashboard layout
+└── .env                # Configuration
+```
+
+## License
+
+MIT
