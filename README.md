@@ -1,6 +1,6 @@
 # Glance Board
 
-A minimalist dashboard designed for wall-mounted displays. Shows the time, weather, and upcoming calendar events at a glance.
+A minimalist dashboard designed for wall-mounted displays. Shows the time, weather, and upcoming calendar events at a glance. Intended to be singular and private, not exposed to the web. Calendar feed pulls from Google Calendar.
 
 ![React](https://img.shields.io/badge/React-18-blue) ![Vite](https://img.shields.io/badge/Vite-5-purple) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 
