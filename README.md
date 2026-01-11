@@ -12,6 +12,8 @@ A minimalist dashboard designed for wall-mounted displays. Shows the time, weath
 - **Offline-First** — Caches data locally; gracefully handles network issues
 - **Kiosk Ready** — Designed for fullscreen display on dedicated screens
 
+Weather icons provided by Basmilius https://github.com/basmilius/weather-icons
+
 ## Getting Started
 
 ### Prerequisites
