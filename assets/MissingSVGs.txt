@@ -1,0 +1,9 @@
+Missing from the assets folder (8 files in svgList.txt but not in folder):
+
+partly-cloudy-day-fog.svg
+partly-cloudy-night-fog.svg
+partly-cloudy-night-rain.svg
+thunderstorms-day-snow.svg
+thunderstorms-night-snow.svg
+thunderstorms-snow.svg
+tornado.svg
