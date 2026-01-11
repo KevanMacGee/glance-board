@@ -2,10 +2,6 @@ clear-day.svg
 clear-night.svg
 cloudy.svg
 drizzle.svg
-dust.svg
-dust-day.svg
-dust-night.svg
-dust-wind.svg
 fog.svg
 fog-day.svg
 fog-night.svg
@@ -13,7 +9,6 @@ hail.svg
 haze.svg
 haze-day.svg
 haze-night.svg
-hurricane.svg
 mist.svg
 overcast.svg
 overcast-day.svg
