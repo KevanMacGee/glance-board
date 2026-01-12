@@ -1,5 +1,19 @@
 import { useState, useEffect } from "react";
-import { format, isToday, isTomorrow } from "date-fns";
+import { format } from "date-fns";
+
+// SVG Icons as components
+const LocationIcon = () => (
+  <svg className="gb-event-meta-icon gb-event-meta-icon-sky" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+    <circle cx="12" cy="10" r="3"/>
+  </svg>
+);
+
+const PhoneIcon = () => (
+  <svg className="gb-event-meta-icon gb-event-meta-icon-mint" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </svg>
+);
 
 interface CalendarEvent {
   id: string;
@@ -72,7 +86,7 @@ const formatEventTime = (date: Date, isAllDay: boolean): string => {
 };
 
 const formatEventDay = (date: Date): string => {
-  return format(date, "EEE"); // e.g., "Tues"
+  return format(date, "EEE").toUpperCase(); // e.g., "THU"
 };
 
 const formatDateNum = (date: Date): string => {
@@ -179,37 +193,49 @@ const AppointmentsList = () => {
 
       <div className="px-6 pb-4 flex-1 overflow-auto gb-scroll" role="list" aria-label="Appointment list">
         <div className="flex flex-col gap-4">
-          {events.map((event) => (
-            <article key={event.id} className="gb-event" role="listitem">
-              <div className="gb-event-time">
-                <div className="gb-event-date-col">
+          {events.map((event, index) => {
+            const isFirst = index === 0;
+            return (
+              <article 
+                key={event.id} 
+                className={`gb-event ${isFirst ? 'gb-event-highlight' : ''}`} 
+                role="listitem"
+              >
+                {/* Date block - left side */}
+                <div className={`gb-event-date-block ${isFirst ? 'gb-event-date-block-highlight' : ''}`}>
                   <div className="gb-event-date-num">{formatDateNum(event.start)}</div>
                   <div className="gb-event-date-month">{formatMonth(event.start)}</div>
+                  <div className="gb-event-date-divider" />
+                  <div className="gb-event-date-day">{formatEventDay(event.start)}</div>
                 </div>
-                <div className="gb-event-time-col">
-                  <div className="gb-event-time-value">{formatEventTime(event.start, event.isAllDay)}</div>
-                  <div className="gb-event-time-label">{formatEventDay(event.start)}</div>
-                </div>
-              </div>
-              <div className="min-w-0 flex flex-col gap-1.5">
-                <div className="gb-event-title">{event.title}</div>
-                <div className="gb-event-meta">
-                  {event.location && (
-                    <span className="inline-flex items-center gap-2">
-                      <span className="gb-ico"></span>
-                      {event.location}
+
+                {/* Event content - right side */}
+                <div className="gb-event-content">
+                  <div className="gb-event-header">
+                    <span className="gb-event-time-value">
+                      {formatEventTime(event.start, event.isAllDay)}
                     </span>
-                  )}
-                  {event.description && (
-                    <span className="inline-flex items-center gap-2">
-                      <span className="gb-ico gb-ico-mint"></span>
-                      {event.description}
-                    </span>
-                  )}
+                    <h3 className="gb-event-title">{event.title}</h3>
+                  </div>
+                  
+                  <div className="gb-event-meta">
+                    {event.location && (
+                      <div className="gb-event-meta-item">
+                        <LocationIcon />
+                        <span>{event.location}</span>
+                      </div>
+                    )}
+                    {event.description && (
+                      <div className="gb-event-meta-item">
+                        <PhoneIcon />
+                        <span>{event.description}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
 
           {events.length === 0 && !isInitialLoad && (
             <div className="text-center py-12 text-gb-faint">No upcoming appointments</div>
