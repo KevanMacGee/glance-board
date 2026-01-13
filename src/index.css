@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -141,6 +143,7 @@
 
   /* Large time display */
   .gb-time {
+    font-family: 'Open Sans', sans-serif;
     font-size: 120px;
     line-height: 1;
     font-weight: 800;
@@ -149,9 +152,10 @@
 
   /* Extra large time display */
   .gb-time-xl {
+    font-family: 'Open Sans', sans-serif;
     font-size: 160px;
     line-height: 0.9;
-    font-weight: 900;
+    font-weight: 800;
     letter-spacing: -0.03em;
   }
 
