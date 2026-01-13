@@ -114,6 +114,16 @@ const isToday = (date: Date): boolean => {
   );
 };
 
+const isTomorrow = (date: Date): boolean => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return (
+    date.getDate() === tomorrow.getDate() &&
+    date.getMonth() === tomorrow.getMonth() &&
+    date.getFullYear() === tomorrow.getFullYear()
+  );
+};
+
 const AppointmentsList = () => {
   const [events, setEvents] = useState<CalendarEvent[]>(() => {
     const cached = loadCachedEvents();
@@ -205,14 +215,15 @@ const AppointmentsList = () => {
           {events.map((event, index) => {
             const isFirst = index === 0;
             const eventIsToday = isToday(event.start);
+            const eventIsTomorrow = isTomorrow(event.start);
             return (
               <article 
                 key={event.id} 
-                className={`gb-event ${isFirst ? 'gb-event-highlight' : ''} ${eventIsToday ? 'gb-event-today' : ''}`} 
+                className={`gb-event ${(isFirst || eventIsTomorrow) ? 'gb-event-highlight' : ''} ${eventIsToday ? 'gb-event-today' : ''}`} 
                 role="listitem"
               >
                 {/* Date block - left side */}
-                <div className={`gb-event-date-block ${(isFirst || eventIsToday) ? 'gb-event-date-block-highlight' : ''}`}>
+                <div className={`gb-event-date-block ${(isFirst || eventIsToday || eventIsTomorrow) ? 'gb-event-date-block-highlight' : ''}`}>
                   <div className="gb-event-date-num">{formatDateNum(event.start)}</div>
                   <div className="gb-event-date-month">{formatMonth(event.start)}</div>
                   <div className="gb-event-date-divider" />
