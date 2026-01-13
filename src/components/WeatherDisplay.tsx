@@ -245,7 +245,7 @@ const WeatherDisplay = () => {
         {isInitialLoad && <span className="gb-pill animate-pulse-soft">Loading...</span>}
       </div>
 
-      <div className="absolute top-1/2 -translate-y-1/2 right-4 w-56 h-56 pointer-events-none" aria-hidden="true">
+      <div className="absolute top-1/2 -translate-y-1/2 right-4 w-[268px] h-[268px] pointer-events-none" aria-hidden="true">
         <WeatherIcon weatherCode={weather.weatherCode} description={weather.description} />
       </div>
 
