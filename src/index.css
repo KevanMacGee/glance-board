@@ -267,6 +267,20 @@
     color: hsl(var(--gb-accent-sky));
   }
 
+  /* Today's events - red border accent */
+  .gb-event-today {
+    border-left-color: hsl(0 84% 60%);
+  }
+
+  .gb-event-today .gb-event-date-block {
+    outline: 1px solid hsla(0, 84%, 60%, 0.4);
+  }
+
+  .gb-event-today .gb-event-date-divider {
+    background: hsl(0 84% 60%);
+    opacity: 0.6;
+  }
+
   .gb-event-date-num {
     font-weight: 700;
     font-size: 28px;

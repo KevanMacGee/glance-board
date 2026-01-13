@@ -105,6 +105,15 @@ const formatMonth = (date: Date): string => {
   return format(date, "MMM"); // e.g., "Jan"
 };
 
+const isToday = (date: Date): boolean => {
+  const today = new Date();
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  );
+};
+
 const AppointmentsList = () => {
   const [events, setEvents] = useState<CalendarEvent[]>(() => {
     const cached = loadCachedEvents();
@@ -195,14 +204,15 @@ const AppointmentsList = () => {
         <div className="flex flex-col gap-4">
           {events.map((event, index) => {
             const isFirst = index === 0;
+            const eventIsToday = isToday(event.start);
             return (
               <article 
                 key={event.id} 
-                className={`gb-event ${isFirst ? 'gb-event-highlight' : ''}`} 
+                className={`gb-event ${isFirst ? 'gb-event-highlight' : ''} ${eventIsToday ? 'gb-event-today' : ''}`} 
                 role="listitem"
               >
                 {/* Date block - left side */}
-                <div className={`gb-event-date-block ${isFirst ? 'gb-event-date-block-highlight' : ''}`}>
+                <div className={`gb-event-date-block ${(isFirst || eventIsToday) ? 'gb-event-date-block-highlight' : ''}`}>
                   <div className="gb-event-date-num">{formatDateNum(event.start)}</div>
                   <div className="gb-event-date-month">{formatMonth(event.start)}</div>
                   <div className="gb-event-date-divider" />
