@@ -25,10 +25,12 @@ const ClockDisplay = () => {
           <span className="animate-blink">:</span>
           {minutes}
         </div>
-        <div className="gb-date-xl flex items-center gap-3" aria-label="Current date">
-          <span className="gb-dot-lg" aria-hidden="true"></span>
-          <span>{dayOfWeek}</span>
-          <span>{monthAndDay}</span>
+        <div className="gb-date-xl flex items-start gap-3" aria-label="Current date">
+          <span className="gb-dot-lg mt-1" aria-hidden="true"></span>
+          <div className="flex flex-col">
+            <span>{dayOfWeek}</span>
+            <span>{monthAndDay}</span>
+          </div>
         </div>
       </div>
     </div>

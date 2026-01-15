@@ -214,6 +214,8 @@
     font-size: 1.9vw;
     color: hsl(var(--gb-muted));
     max-width: 26ch;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   /* Weather high/low */
