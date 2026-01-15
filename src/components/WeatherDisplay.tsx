@@ -250,16 +250,14 @@ const WeatherDisplay = () => {
       </div>
 
       <div className="flex flex-col gap-4 min-w-0 justify-center flex-1 relative z-10">
-        <div className="flex items-baseline gap-4 flex-wrap">
-          <div className="gb-temp" aria-label="Current temperature">
-            {weather.temp}°
-          </div>
-          <div className="gb-weather-desc">{weather.description}</div>
+        <div className="gb-temp" aria-label="Current temperature">
+          {weather.temp}°
         </div>
         <div className="gb-weather-hl" aria-label="High and low">
           <span>High {weather.high}°</span>
           <span>Low {weather.low}°</span>
         </div>
+        <div className="gb-weather-desc">{weather.description}</div>
       </div>
 
       <div className="gb-note mt-3 flex items-center justify-between relative z-10">
