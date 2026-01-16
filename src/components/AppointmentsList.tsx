@@ -212,18 +212,17 @@ const AppointmentsList = () => {
 
       <div className="px-6 pb-4 flex-1 overflow-auto gb-scroll" role="list" aria-label="Appointment list">
         <div className="flex flex-col gap-4">
-          {events.map((event, index) => {
-            const isFirst = index === 0;
+          {events.map((event) => {
             const eventIsToday = isToday(event.start);
             const eventIsTomorrow = isTomorrow(event.start);
             return (
               <article 
                 key={event.id} 
-                className={`gb-event ${(isFirst || eventIsTomorrow) ? 'gb-event-highlight' : ''} ${eventIsToday ? 'gb-event-today' : ''}`} 
+                className={`gb-event ${eventIsTomorrow ? 'gb-event-highlight' : ''} ${eventIsToday ? 'gb-event-today' : ''}`} 
                 role="listitem"
               >
                 {/* Date block - left side */}
-                <div className={`gb-event-date-block ${(isFirst || eventIsToday || eventIsTomorrow) ? 'gb-event-date-block-highlight' : ''}`}>
+                <div className={`gb-event-date-block ${eventIsTomorrow ? 'gb-event-date-block-highlight' : ''}`}>
                   <div className="gb-event-date-num">{formatDateNum(event.start)}</div>
                   <div className="gb-event-date-month">{formatMonth(event.start)}</div>
                   <div className="gb-event-date-divider" />

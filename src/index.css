@@ -249,7 +249,7 @@
     box-shadow: 0 4px 20px hsla(0, 0%, 0%, 0.2);
   }
 
-  /* First/soonest event gets accent border */
+  /* Tomorrow events get accent border */
   .gb-event-highlight {
     border-left-color: hsl(var(--gb-accent-sky));
   }
