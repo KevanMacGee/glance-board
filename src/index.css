@@ -222,7 +222,7 @@
   .gb-weather-hl {
     display: flex;
     gap: 24px;
-    color: hsl(var(--gb-faint));
+    color: hsl(var(--gb-muted));
     font-size: 1.7vw;
   }
 
