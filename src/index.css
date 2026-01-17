@@ -221,9 +221,10 @@
   /* Weather high/low */
   .gb-weather-hl {
     display: flex;
-    gap: 24px;
+    gap: 20px;
     color: hsl(var(--gb-muted));
-    font-size: 1.7vw;
+    font-size: 1.8vw;
+    line-height: 1.1;
   }
 
   /* Weather icon container */
