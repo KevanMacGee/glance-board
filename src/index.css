@@ -237,7 +237,7 @@
   .gb-event {
     background: hsl(var(--gb-card-inner));
     border-radius: 14px;
-    padding: 22px;
+    padding: 16px 22px;
     display: flex;
     gap: 22px;
     align-items: stretch;
@@ -313,10 +313,12 @@
   }
 
   .gb-event-date-day {
-    font-size: 16px;
+    font-size: clamp(19px, 1.1vw, 22px);
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
+    line-height: 1.1;
+    margin: -1px 0;
   }
 
   /* Event content - right side */
