@@ -9,15 +9,96 @@ interface WeatherData {
   lastUpdated: Date;
 }
 
-// Helper to determine if it's daytime
-const isDaytime = (): boolean => {
-  const hour = new Date().getHours();
-  return hour >= 6 && hour < 20;
+// =============================================================================
+// Seasonal Day/Night Phase Helpers
+// Based on Rochester, NY sunrise/sunset times throughout the year
+// =============================================================================
+
+interface SeasonalSchedule {
+  dayStartMinutes: number;   // Minutes since midnight when DAY begins
+  nightStartMinutes: number; // Minutes since midnight when NIGHT begins
+}
+
+// Seasonal schedule lookup table
+// Active by month: Dec+Jan→Dec, Feb+Mar→Feb, Apr+May→Apr, Jun+Jul→Jun, Aug+Sep→Aug, Oct+Nov→Oct
+const SEASONAL_SCHEDULES: Record<number, SeasonalSchedule> = {
+  // Dec row (Dec + Jan): dayStart 07:26, nightStart 16:36
+  12: { dayStartMinutes: 7 * 60 + 26, nightStartMinutes: 16 * 60 + 36 },
+  1:  { dayStartMinutes: 7 * 60 + 26, nightStartMinutes: 16 * 60 + 36 },
+  // Feb row (Feb + Mar): dayStart 07:25, nightStart 17:22
+  2:  { dayStartMinutes: 7 * 60 + 25, nightStartMinutes: 17 * 60 + 22 },
+  3:  { dayStartMinutes: 7 * 60 + 25, nightStartMinutes: 17 * 60 + 22 },
+  // Apr row (Apr + May): dayStart 06:53, nightStart 19:37
+  4:  { dayStartMinutes: 6 * 60 + 53, nightStartMinutes: 19 * 60 + 37 },
+  5:  { dayStartMinutes: 6 * 60 + 53, nightStartMinutes: 19 * 60 + 37 },
+  // Jun row (Jun + Jul): dayStart 05:32, nightStart 20:46
+  6:  { dayStartMinutes: 5 * 60 + 32, nightStartMinutes: 20 * 60 + 46 },
+  7:  { dayStartMinutes: 5 * 60 + 32, nightStartMinutes: 20 * 60 + 46 },
+  // Aug row (Aug + Sep): dayStart 06:01, nightStart 20:33
+  8:  { dayStartMinutes: 6 * 60 + 1,  nightStartMinutes: 20 * 60 + 33 },
+  9:  { dayStartMinutes: 6 * 60 + 1,  nightStartMinutes: 20 * 60 + 33 },
+  // Oct row (Oct + Nov): dayStart 07:10, nightStart 18:53
+  10: { dayStartMinutes: 7 * 60 + 10, nightStartMinutes: 18 * 60 + 53 },
+  11: { dayStartMinutes: 7 * 60 + 10, nightStartMinutes: 18 * 60 + 53 },
 };
+
+/**
+ * Get minutes since midnight for a local Date
+ * Uses LOCAL time (getHours/getMinutes), NOT UTC
+ */
+const minutesSinceMidnightLocal = (date: Date): number => {
+  return date.getHours() * 60 + date.getMinutes();
+};
+
+/**
+ * Get the seasonal schedule for a given local date
+ * Month is 1-indexed (1=Jan, 12=Dec) from getMonth()+1
+ */
+const getSeasonalSchedule = (nowLocal: Date): SeasonalSchedule => {
+  const month = nowLocal.getMonth() + 1; // getMonth() is 0-indexed
+  return SEASONAL_SCHEDULES[month];
+};
+
+/**
+ * Determine if it's currently night based on local time and seasonal schedule
+ * DAY = between dayStart (inclusive) and nightStart (exclusive)
+ * NIGHT = otherwise
+ */
+const isNightLocal = (nowLocal: Date): boolean => {
+  const schedule = getSeasonalSchedule(nowLocal);
+  const currentMinutes = minutesSinceMidnightLocal(nowLocal);
+  
+  // DAY if currentMinutes >= dayStart AND currentMinutes < nightStart
+  const isDay = currentMinutes >= schedule.dayStartMinutes && currentMinutes < schedule.nightStartMinutes;
+  return !isDay;
+};
+
+/**
+ * Get the current phase ("day" or "night") for icon selection
+ */
+const getPhase = (): "day" | "night" => {
+  const now = new Date();
+  return isNightLocal(now) ? "night" : "day";
+};
+
+// Dev verification (can be removed in production)
+if (typeof window !== "undefined" && (window as unknown as { __DEV_VERIFY_PHASE__?: boolean }).__DEV_VERIFY_PHASE__) {
+  // Test: January 18 at 6:00pm local → should be NIGHT (Dec schedule: night starts 16:36)
+  const janEvening = new Date(2026, 0, 18, 18, 0); // Jan 18, 6pm
+  console.log("Jan 6pm NIGHT?", isNightLocal(janEvening)); // Expected: true
+  
+  // Test: June 15 at 8:30pm local → should be DAY (Jun schedule: night starts 20:46)
+  const junEvening = new Date(2026, 5, 15, 20, 30); // Jun 15, 8:30pm
+  console.log("Jun 8:30pm DAY?", !isNightLocal(junEvening)); // Expected: true
+  
+  // Test: October 15 at 7:00pm local → should be NIGHT (Oct schedule: night starts 18:53)
+  const octEvening = new Date(2026, 9, 15, 19, 0); // Oct 15, 7pm
+  console.log("Oct 7pm NIGHT?", isNightLocal(octEvening)); // Expected: true
+}
 
 // Map weather codes to SVG filenames
 const getWeatherIconPath = (weatherCode: number): string => {
-  const timeOfDay = isDaytime() ? "day" : "night";
+  const timeOfDay = getPhase();
   
   // WMO Weather interpretation codes (WW)
   // https://open-meteo.com/en/docs
