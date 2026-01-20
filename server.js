@@ -20,6 +20,38 @@ let eventsCache = {
 };
 let lastFetchTime = 0;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
+const ICS_FETCH_TIMEOUT = 15 * 1000; // 15 seconds
+const ICS_MAX_SIZE = 1 * 1024 * 1024; // 1 MB
+
+async function fetchICSWithTimeout(url, timeoutMs, maxSize) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    // Check Content-Length if available
+    const contentLength = response.headers.get('content-length');
+    if (contentLength && parseInt(contentLength, 10) > maxSize) {
+      throw new Error(`ICS feed too large: ${contentLength} bytes (max ${maxSize})`);
+    }
+    
+    const text = await response.text();
+    
+    // Double-check actual size
+    if (text.length > maxSize) {
+      throw new Error(`ICS feed too large: ${text.length} bytes (max ${maxSize})`);
+    }
+    
+    return text;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 
 async function fetchAndParseICS(forceRefresh = false) {
   if (!GOOGLE_ICAL_URL) {
@@ -36,7 +68,8 @@ async function fetchAndParseICS(forceRefresh = false) {
 
   try {
     console.log('Fetching ICS feed...');
-    const data = await ical.async.fromURL(GOOGLE_ICAL_URL);
+    const icsText = await fetchICSWithTimeout(GOOGLE_ICAL_URL, ICS_FETCH_TIMEOUT, ICS_MAX_SIZE);
+    const data = ical.sync.parseICS(icsText);
     
     const nowDate = new Date();
     const thirtyDaysFromNow = new Date(nowDate.getTime() + 30 * 24 * 60 * 60 * 1000);

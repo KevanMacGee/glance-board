@@ -240,13 +240,17 @@ const WeatherDisplay = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(() => !loadCachedWeather());
 
   const fetchWeather = async (isBackground = false) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10_000); // 10 second timeout
+    
     try {
       // Default to Rochester, NY coordinates
       const lat = 43.1566;
       const lon = -77.6088;
       
       const response = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto`
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto`,
+        { signal: controller.signal }
       );
       
       if (response.ok) {
@@ -285,9 +289,13 @@ const WeatherDisplay = () => {
         saveCachedWeather(newWeather);
       }
     } catch (error) {
-      console.error("Failed to fetch weather:", error);
+      // Don't log abort errors (expected on timeout)
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error("Failed to fetch weather:", error);
+      }
       // Keep cached data on error
     } finally {
+      clearTimeout(timeoutId);
       if (!isBackground) {
         setIsInitialLoad(false);
       }
