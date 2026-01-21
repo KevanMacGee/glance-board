@@ -2,6 +2,8 @@
 
 A minimalist dashboard designed for wall-mounted displays. Shows the time, weather, and upcoming calendar events at a glance. Intended to be singular and private, not exposed to the web. Calendar feed pulls from Google Calendar.
 
+This project is meant to be a one-off for my personal use. It isn't designed for anyone else to use it, but you are welcome to. However, you are on your own. There are small to low security risks which I may not bother to fix, even if you ask me to. My use for it is pretty unique so at the moment since it fits that use currently, changes will be small, infrequent and at my whim. If you really want to use it, I suggest forking it and adapting it to your needs. 
+
 ![React](https://img.shields.io/badge/React-18-blue) ![Vite](https://img.shields.io/badge/Vite-5-purple) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 
 ## Features
@@ -40,7 +42,7 @@ PORT=3000
 
 1. Open [Google Calendar Settings](https://calendar.google.com)
 2. Select your calendar → *Integrate calendar*
-3. Copy the *Secret address in iCal format*
+3. Copy the *Secret address in iCal format* . That is the link that goes above.
 
 ### Running
 
