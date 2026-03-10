@@ -1,0 +1,19 @@
+1. **High** - Unauthenticated calendar data exposure (`/api/events`)
+Impacted files: [server.js:105](/C:/Users/User/Development/glance-board/server.js:105), [server.js:111](/C:/Users/User/Development/glance-board/server.js:111), [server.js:112](/C:/Users/User/Development/glance-board/server.js:112), [server.js:145](/C:/Users/User/Development/glance-board/server.js:145), [server.js:149](/C:/Users/User/Development/glance-board/server.js:149)  
+Exploit scenario: Any client that can reach the server can call `GET /api/events` and retrieve private event titles, locations, and descriptions without authentication.  
+Specific fix recommendation: Require auth for `/api/events` (for example, a bearer token or mTLS), and return only minimally needed fields (omit `description`/`location` unless explicitly required).
+
+2. **Medium** - Network binding is overly broad by default (LAN exposure)
+Impacted files: [server.js:172](/C:/Users/User/Development/glance-board/server.js:172), [vite.config.ts:9](/C:/Users/User/Development/glance-board/vite.config.ts:9)  
+Exploit scenario: `app.listen(PORT)` binds on all interfaces by default, and Vite dev is explicitly set to `host: "::"`, so users on the same LAN can access the app/API if firewalling is permissive.  
+Specific fix recommendation: Bind explicitly to loopback by default (`127.0.0.1` or `::1`) and require an explicit `HOST` override for remote access.
+
+3. **Medium** - Unauthenticated `force=true` cache bypass enables request-amplified DoS
+Impacted files: [server.js:65](/C:/Users/User/Development/glance-board/server.js:65), [server.js:71](/C:/Users/User/Development/glance-board/server.js:71), [server.js:72](/C:/Users/User/Development/glance-board/server.js:72), [server.js:147](/C:/Users/User/Development/glance-board/server.js:147)  
+Exploit scenario: An attacker can spam `GET /api/events?force=true`, forcing repeated upstream fetches and synchronous ICS parsing (`ical.sync.parseICS`), causing CPU/network exhaustion and degraded availability.  
+Specific fix recommendation: Remove public `force` control or gate it behind admin auth, add per-IP rate limiting, and add single-flight locking so concurrent refresh requests reuse one fetch/parse operation.
+
+4. **Low** - Sensitive calendar content persisted in plaintext `localStorage`
+Impacted files: [src/components/AppointmentsList.tsx:53](/C:/Users/User/Development/glance-board/src/components/AppointmentsList.tsx:53), [src/components/AppointmentsList.tsx:77](/C:/Users/User/Development/glance-board/src/components/AppointmentsList.tsx:77), [src/components/AppointmentsList.tsx:155](/C:/Users/User/Development/glance-board/src/components/AppointmentsList.tsx:155), [src/components/AppointmentsList.tsx:162](/C:/Users/User/Development/glance-board/src/components/AppointmentsList.tsx:162)  
+Exploit scenario: Anyone with local browser/profile access (or malicious extension running in-origin) can read cached event details from `localStorage`.  
+Specific fix recommendation: Prefer in-memory caching for events, or persist only non-sensitive fields with a short TTL and explicit purge on startup/refresh.
