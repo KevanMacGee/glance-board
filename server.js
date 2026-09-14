@@ -72,7 +72,7 @@ async function fetchAndParseICS(forceRefresh = false) {
     const data = ical.sync.parseICS(icsText);
     
     const nowDate = new Date();
-    const thirtyDaysFromNow = new Date(nowDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const fortyFiveDaysFromNow = new Date(nowDate.getTime() + 45 * 24 * 60 * 60 * 1000);
     const startOfToday = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate());
     
     const events = [];
@@ -97,8 +97,8 @@ async function fetchAndParseICS(forceRefresh = false) {
         end = new Date(end);
       }
       
-      // Filter: only events from today through 30 days from now
-      if (start < startOfToday || start > thirtyDaysFromNow) {
+      // Filter: only events from today through 45 days from now
+      if (start < startOfToday || start > fortyFiveDaysFromNow) {
         continue;
       }
       
