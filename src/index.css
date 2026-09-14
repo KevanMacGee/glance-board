@@ -186,13 +186,13 @@
     margin-top: 6px;
     font-size: 0.82em;
     line-height: 1;
-    color: hsl(0 0% 100% / 0.58);
+    color: #c3e1ed;
     white-space: nowrap;
   }
 
   .gb-england-time-label {
     font-size: 0.9em;
-    font-weight: 400;
+    font-weight: 700;
     letter-spacing: normal;
     color: inherit;
   }
