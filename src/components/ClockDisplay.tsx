@@ -17,12 +17,17 @@ const ClockDisplay = () => {
   const month = format(currentTime, "MMM");
   const abbreviatedMonth = month === "Sep" ? "Sept" : month;
   const dateLabel = `${format(currentTime, "EEEE")}, ${abbreviatedMonth} ${format(currentTime, "do")}`;
-  const englandTime = new Intl.DateTimeFormat("en-US", {
+  const englandTimeFormatter = new Intl.DateTimeFormat("en-US", {
     timeZone: "Europe/London",
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  }).format(currentTime).replace(/\s+/g, "").toLowerCase();
+  });
+  const englandTimeParts = englandTimeFormatter.formatToParts(currentTime);
+  const englandHour = englandTimeParts.find(({ type }) => type === "hour")?.value ?? "";
+  const englandMinute = englandTimeParts.find(({ type }) => type === "minute")?.value ?? "";
+  const englandPeriod = englandTimeParts.find(({ type }) => type === "dayPeriod")?.value.toLowerCase() ?? "";
+  const englandTime = `${englandHour}:${englandMinute}${englandPeriod}`;
 
   return (
     <div className="gb-section flex-1 flex flex-col justify-center py-0">
@@ -38,7 +43,12 @@ const ClockDisplay = () => {
             <span>{dateLabel}</span>
           </div>
           <div className="gb-england-time" aria-label={`England time: ${englandTime}`}>
-            <span>{englandTime}</span>
+            <span>
+              {englandHour}
+              <span className="animate-blink">:</span>
+              {englandMinute}
+              {englandPeriod}
+            </span>
             {" "}
             <span className="gb-england-time-label">England</span>
             {" "}
