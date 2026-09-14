@@ -31,7 +31,7 @@ const ClockDisplay = () => {
 
   return (
     <div className="gb-section flex-1 flex flex-col justify-center py-0">
-      <div className="flex flex-col gap-2">
+      <div className="gb-blink-source flex flex-col gap-2">
         <div className="gb-time-xl" aria-label="Current time">
           {hours}
           <span className="animate-blink">:</span>
