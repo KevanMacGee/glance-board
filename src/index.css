@@ -182,9 +182,6 @@
   }
 
   .gb-england-time {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
     margin-left: calc(16px + 0.75rem);
     margin-top: 6px;
     font-size: 0.82em;
@@ -194,11 +191,10 @@
   }
 
   .gb-england-time-label {
-    font-size: 0.48em;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: hsl(0 0% 100% / 0.48);
+    font-size: 0.9em;
+    font-weight: 400;
+    letter-spacing: normal;
+    color: inherit;
   }
 
   @media (min-width: 980px) {

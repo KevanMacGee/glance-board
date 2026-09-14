@@ -22,7 +22,7 @@ const ClockDisplay = () => {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  }).format(currentTime);
+  }).format(currentTime).replace(/\s+/g, "").toLowerCase();
 
   return (
     <div className="gb-section flex-1 flex flex-col justify-center py-0">
@@ -38,8 +38,11 @@ const ClockDisplay = () => {
             <span>{dateLabel}</span>
           </div>
           <div className="gb-england-time" aria-label={`England time: ${englandTime}`}>
-            <span className="gb-england-time-label">England</span>
             <span>{englandTime}</span>
+            {" "}
+            <span className="gb-england-time-label">England</span>
+            {" "}
+            <span>time</span>
           </div>
         </div>
       </div>
