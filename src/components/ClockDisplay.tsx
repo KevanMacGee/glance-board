@@ -14,8 +14,15 @@ const ClockDisplay = () => {
 
   const hours = format(currentTime, "h");
   const minutes = format(currentTime, "mm");
-  const dayOfWeek = format(currentTime, "EEEE,");
-  const monthAndDay = format(currentTime, "MMMM d");
+  const month = format(currentTime, "MMM");
+  const abbreviatedMonth = month === "Sep" ? "Sept" : month;
+  const dateLabel = `${format(currentTime, "EEEE")}, ${abbreviatedMonth} ${format(currentTime, "do")}`;
+  const englandTime = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/London",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(currentTime);
 
   return (
     <div className="gb-section flex-1 flex flex-col justify-center py-0">
@@ -25,12 +32,15 @@ const ClockDisplay = () => {
           <span className="animate-blink">:</span>
           {minutes}
         </div>
-        <div className="gb-date-xl flex flex-col gap-0" aria-label="Current date">
-          <div className="flex items-center gap-3">
+        <div className="gb-date-xl flex flex-col gap-0" aria-label={`Current date: ${dateLabel}`}>
+          <div className="gb-date-line flex items-center gap-3">
             <span className="gb-dot-lg" aria-hidden="true"></span>
-            <span>{dayOfWeek}</span>
+            <span>{dateLabel}</span>
           </div>
-          <span className="ml-[calc(16px+0.75rem)]">{monthAndDay}</span>
+          <div className="gb-england-time" aria-label={`England time: ${englandTime}`}>
+            <span className="gb-england-time-label">England</span>
+            <span>{englandTime}</span>
+          </div>
         </div>
       </div>
     </div>

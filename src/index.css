@@ -177,6 +177,30 @@
     color: hsl(var(--gb-muted));
   }
 
+  .gb-date-line {
+    white-space: nowrap;
+  }
+
+  .gb-england-time {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-left: calc(16px + 0.75rem);
+    margin-top: 6px;
+    font-size: 0.82em;
+    line-height: 1;
+    color: hsl(0 0% 100% / 0.58);
+    white-space: nowrap;
+  }
+
+  .gb-england-time-label {
+    font-size: 0.48em;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: hsl(0 0% 100% / 0.48);
+  }
+
   @media (min-width: 980px) {
     .gb-date-xl {
       white-space: nowrap;
