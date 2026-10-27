@@ -18,6 +18,8 @@ This project is meant to be a one-off for my personal use. It isn't designed for
 
 Weather icons provided by Basmilius https://github.com/basmilius/weather-icons
 
+![App settings for the desktop overlay](assets/app-setting-desktop-overlay.png)
+
 ## Getting Started
 
 ### Prerequisites
