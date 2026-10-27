@@ -197,7 +197,7 @@ const AppointmentsList = () => {
   };
 
   return (
-    <section className="gb-panel flex flex-col h-full" aria-label="Appointments">
+    <section className="flex min-h-0 h-full flex-col" aria-label="Appointments">
       <header className="px-6 pt-6 pb-4 flex items-end justify-between gap-4">
         <div className="flex items-center gap-3">
           <h2 className="gb-header-title">Appointments</h2>

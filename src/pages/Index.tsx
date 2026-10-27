@@ -10,7 +10,7 @@ const Index = () => {
       aria-label="Glance Board - Kitchen wall calendar"
     >
       {/* Left Column - Clock & Weather */}
-      <section className="gb-panel flex flex-col gap-[18px] p-[22px]" aria-label="Status column">
+      <section className="flex min-h-0 flex-col gap-[18px] p-[22px]" aria-label="Status column">
         <ClockDisplay />
         <WeatherDisplay />
       </section>
