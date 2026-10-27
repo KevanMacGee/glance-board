@@ -174,7 +174,6 @@
   }
 
   .gb-england-time {
-    margin-left: calc(16px + 0.75rem);
     margin-top: 6px;
     font-size: 0.82em;
     line-height: 1;
@@ -193,15 +192,6 @@
     .gb-date-xl {
       white-space: nowrap;
     }
-  }
-
-  /* Large accent dot */
-  .gb-dot-lg {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: hsl(var(--gb-accent-mint));
-    flex: 0 0 auto;
   }
 
   /* Accent dot */

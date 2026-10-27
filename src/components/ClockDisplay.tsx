@@ -39,7 +39,6 @@ const ClockDisplay = () => {
         </div>
         <div className="gb-date-xl flex flex-col gap-0" aria-label={`Current date: ${dateLabel}`}>
           <div className="gb-date-line flex items-center gap-3">
-            <span className="gb-dot-lg" aria-hidden="true"></span>
             <span>{dateLabel}</span>
           </div>
           <div className="gb-england-time" aria-label={`England time: ${englandTime}`}>
