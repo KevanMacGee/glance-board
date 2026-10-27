@@ -239,22 +239,16 @@
   .gb-event {
     background: hsl(var(--gb-card-inner));
     border-radius: 14px;
-    padding: 16px 22px;
+    padding: 16px 22px 16px 27px;
     display: flex;
     gap: 22px;
     align-items: stretch;
-    border-left: 5px solid transparent;
     transition: box-shadow 0.2s ease;
     min-height: 166px;
   }
 
   .gb-event:hover {
     box-shadow: 0 4px 20px hsla(0, 0%, 0%, 0.2);
-  }
-
-  /* Tomorrow events get accent border */
-  .gb-event-highlight {
-    border-left-color: hsl(var(--gb-accent-sky));
   }
 
   /* Date block - vertical stack on left */
@@ -274,20 +268,13 @@
   .gb-event-date-block-highlight {
     background: hsla(199, 89%, 60%, 0.15);
     color: hsl(var(--gb-accent-sky));
+    outline: 1px solid hsla(199, 89%, 60%, 0.4);
   }
 
-  /* Today's events - red border accent */
-  .gb-event-today {
-    border-left-color: hsl(0 84% 60%);
-  }
-
-  .gb-event-today .gb-event-date-block {
+  .gb-event-date-block-today {
+    background: hsla(0, 84%, 60%, 0.15);
+    color: hsl(0 84% 60%);
     outline: 1px solid hsla(0, 84%, 60%, 0.4);
-  }
-
-  .gb-event-today .gb-event-date-divider {
-    background: hsl(0 84% 60%);
-    opacity: 0.6;
   }
 
   .gb-event-date-num {

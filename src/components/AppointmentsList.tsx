@@ -218,11 +218,11 @@ const AppointmentsList = () => {
             return (
               <article 
                 key={event.id} 
-                className={`gb-event ${eventIsTomorrow ? 'gb-event-highlight' : ''} ${eventIsToday ? 'gb-event-today' : ''}`} 
+                className="gb-event"
                 role="listitem"
               >
                 {/* Date block - left side */}
-                <div className={`gb-event-date-block ${eventIsTomorrow ? 'gb-event-date-block-highlight' : ''}`}>
+                <div className={`gb-event-date-block ${eventIsToday ? 'gb-event-date-block-today' : eventIsTomorrow ? 'gb-event-date-block-highlight' : ''}`}>
                   <div className="gb-event-date-num">{formatDateNum(event.start)}</div>
                   <div className="gb-event-date-month">{formatMonth(event.start)}</div>
                   <div className="gb-event-date-divider" />
