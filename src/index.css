@@ -166,7 +166,7 @@
     font-size: clamp(2vw, 4vw, 3.5vw);
     font-weight: 700;
     line-height: 1.1;
-    color: hsl(var(--gb-muted));
+    color: hsl(var(--gb-text));
   }
 
   .gb-date-line {
@@ -177,7 +177,7 @@
     margin-top: 6px;
     font-size: 0.82em;
     line-height: 1;
-    color: #c3e1ed;
+    color: hsl(var(--gb-muted));
     white-space: nowrap;
   }
 
