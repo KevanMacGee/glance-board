@@ -214,6 +214,7 @@
   /* Weather description */
   .gb-weather-desc {
     font-size: 1.9vw;
+    font-weight: 700;
     color: hsl(var(--gb-muted));
     max-width: 26ch;
     word-wrap: break-word;
@@ -226,6 +227,7 @@
     gap: 20px;
     color: hsl(var(--gb-muted));
     font-size: 1.8vw;
+    font-weight: 700;
     line-height: 1.1;
   }
 

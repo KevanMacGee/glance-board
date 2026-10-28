@@ -338,7 +338,7 @@ const WeatherDisplay = () => {
         <WeatherIcon weatherCode={weather.weatherCode} description={weather.description} />
       </div>
 
-      <div className="flex flex-col gap-4 min-w-0 justify-center flex-1 relative z-10">
+      <div className="flex flex-col gap-3 min-w-0 justify-center flex-1 relative z-10">
         <div className="gb-temp" aria-label="Current temperature">
           {weather.temp}°
         </div>
