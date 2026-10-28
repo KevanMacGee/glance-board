@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 // SVG Icons as components
 const LocationIcon = () => (
@@ -23,6 +23,7 @@ interface CalendarEvent {
   location?: string;
   description?: string;
   isAllDay: boolean;
+  isHoliday?: boolean;
 }
 
 interface APIResponse {
@@ -32,6 +33,7 @@ interface APIResponse {
     start: string;
     end: string;
     allDay: boolean;
+    isHoliday?: boolean;
     location?: string;
     description?: string;
   }>;
@@ -56,8 +58,8 @@ const loadCachedEvents = (): CachedData | null => {
       // Rehydrate Date objects
       data.events = data.events.map((e: CalendarEvent & { start: string; end: string }) => ({
         ...e,
-        start: new Date(e.start),
-        end: new Date(e.end),
+        start: e.isHoliday ? parseISO(e.start) : new Date(e.start),
+        end: e.isHoliday ? parseISO(e.end) : new Date(e.end),
       }));
       return data;
     }
@@ -74,7 +76,14 @@ const saveCachedEvents = (events: CalendarEvent[], lastUpdated: Date) => {
       lastUpdated: lastUpdated.toISOString(),
       cachedAt: Date.now(),
     };
-    localStorage.setItem(EVENTS_CACHE_KEY, JSON.stringify(data));
+    localStorage.setItem(EVENTS_CACHE_KEY, JSON.stringify({
+      ...data,
+      events: events.map(event => event.isHoliday ? {
+        ...event,
+        start: format(event.start, "yyyy-MM-dd"),
+        end: format(event.end, "yyyy-MM-dd"),
+      } : event),
+    }));
   } catch {
     // Ignore cache errors
   }
@@ -149,12 +158,13 @@ const AppointmentsList = () => {
       const parsedEvents: CalendarEvent[] = data.events.map((e) => ({
         id: e.id,
         title: e.title,
-        start: new Date(e.start),
-        end: new Date(e.end),
+        start: e.isHoliday ? parseISO(e.start) : new Date(e.start),
+        end: e.isHoliday ? parseISO(e.end) : new Date(e.end),
         location: e.location,
         description: e.description,
         isAllDay: e.allDay,
-      }));
+        isHoliday: e.isHoliday,
+      })).sort((a, b) => a.start.getTime() - b.start.getTime());
 
       setEvents(parsedEvents);
       setLastUpdated(new Date(data.lastUpdated));
@@ -213,6 +223,17 @@ const AppointmentsList = () => {
       <div className="px-6 pb-4 flex-1 overflow-auto gb-scroll" role="list" aria-label="Appointment list">
         <div className="flex flex-col gap-4">
           {events.map((event) => {
+            if (event.isHoliday) {
+              const today = new Date();
+              const dateFormat = event.start.getFullYear() !== today.getFullYear()
+                ? "MMM do, yyyy"
+                : event.start.getMonth() !== today.getMonth() ? "MMM do" : "do";
+              return (
+                <article key={event.id} className="gb-event gb-event-title gb-holiday" role="listitem">
+                  {format(event.start, dateFormat)} - {event.title}
+                </article>
+              );
+            }
             const eventIsToday = isToday(event.start);
             const eventIsTomorrow = isTomorrow(event.start);
             return (

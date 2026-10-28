@@ -13,6 +13,7 @@ This project is meant to be a one-off for my personal use. It isn't designed for
 - **Live Clock** — Current time and date, updates every second
 - **Weather** — Temperature, conditions, and daily high/low from Open-Meteo
 - **Calendar** — Upcoming events from Google Calendar (via ICS feed)
+- **US Holidays** — Date-and-name entries alongside appointments, from Google's public US Holidays feed; cached daily with no extra configuration
 - **Offline-First** — Caches data locally; gracefully handles network issues
 - **Kiosk Ready** — Designed for fullscreen display on dedicated screens
 

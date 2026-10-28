@@ -251,6 +251,12 @@
     box-shadow: 0 4px 20px hsla(0, 0%, 0%, 0.2);
   }
 
+  .gb-holiday {
+    min-height: 0;
+    /* Match the card's 27px inset plus the date block's 12px inner padding. */
+    padding-left: 39px;
+  }
+
   /* Date block - vertical stack on left */
   .gb-event-date-block {
     display: flex;

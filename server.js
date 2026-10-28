@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import ical from 'node-ical';
 import dotenv from 'dotenv';
+import { parseHolidays } from './holidays.js';
 
 dotenv.config();
 
@@ -22,6 +23,12 @@ let lastFetchTime = 0;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
 const ICS_FETCH_TIMEOUT = 15 * 1000; // 15 seconds
 const ICS_MAX_SIZE = 1 * 1024 * 1024; // 1 MB
+const US_HOLIDAYS_URL = 'https://calendar.google.com/calendar/ical/en.usa%23holiday%40group.v.calendar.google.com/public/basic.ics';
+const HOLIDAY_CACHE_DURATION = 24 * 60 * 60 * 1000; // 1 day
+let holidayICS = null;
+let lastHolidayFetch = 0;
+let lastHolidayAttempt = 0;
+let holidayRefresh = null;
 
 async function fetchICSWithTimeout(url, timeoutMs, maxSize) {
   const controller = new AbortController();
@@ -138,6 +145,48 @@ async function fetchAndParseICS(forceRefresh = false) {
   }
 }
 
+async function fetchHolidays() {
+  const now = Date.now();
+  // Retry failed downloads on the existing hourly refresh; successful downloads
+  // stay cached for a day, including when Update Now is used for appointments.
+  const cacheDuration = lastHolidayAttempt > lastHolidayFetch ? CACHE_DURATION : HOLIDAY_CACHE_DURATION;
+  if (!holidayRefresh && (!lastHolidayAttempt || now - lastHolidayAttempt >= cacheDuration)) {
+    lastHolidayAttempt = now;
+    holidayRefresh = (async () => {
+      try {
+        const text = await fetchICSWithTimeout(US_HOLIDAYS_URL, ICS_FETCH_TIMEOUT, ICS_MAX_SIZE);
+        parseHolidays(text); // Validate before replacing a working cache.
+        holidayICS = text;
+        lastHolidayFetch = now;
+      } catch (error) {
+        console.warn('Failed to refresh US holidays:', error.message);
+      }
+    })();
+  }
+  if (holidayRefresh) {
+    await holidayRefresh;
+    holidayRefresh = null;
+  }
+  return holidayICS ? parseHolidays(holidayICS) : [];
+}
+
+export async function fetchCalendarEvents(forceRefresh = false) {
+  const [appointments, holidays] = await Promise.all([
+    fetchAndParseICS(forceRefresh),
+    fetchHolidays().catch(error => {
+      console.warn('Failed to process US holidays:', error.message);
+      return [];
+    })
+  ]);
+  return {
+    ...appointments,
+    events: [...appointments.events, ...holidays].sort((a, b) => {
+      const startTime = (event) => new Date(event.isHoliday ? `${event.start}T00:00:00` : event.start).getTime();
+      return startTime(a) - startTime(b);
+    })
+  };
+}
+
 async function createServer() {
   const app = express();
   
@@ -145,7 +194,7 @@ async function createServer() {
   app.get('/api/events', async (req, res) => {
     try {
       const forceRefresh = req.query.force === 'true';
-      const result = await fetchAndParseICS(forceRefresh);
+      const result = await fetchCalendarEvents(forceRefresh);
       res.json(result);
     } catch (error) {
       console.error('API error:', error);
@@ -173,10 +222,12 @@ async function createServer() {
     console.log(`\n🖼️  Glance Board running at http://localhost:${PORT}`);
     console.log(`   Mode: ${isProd ? 'production' : 'development'}`);
     if (!GOOGLE_ICAL_URL) {
-      console.log('   ⚠️  GOOGLE_ICAL_URL not set - calendar will be empty');
+      console.log('   ⚠️  GOOGLE_ICAL_URL not set - showing US holidays only');
     }
     console.log('');
   });
 }
 
-createServer();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  createServer();
+}
