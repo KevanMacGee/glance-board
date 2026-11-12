@@ -41,17 +41,15 @@ const ClockDisplay = () => {
           <div className="gb-date-line flex items-center gap-3">
             <span>{dateLabel}</span>
           </div>
-          <div className="gb-england-time" aria-label={`England time: ${englandTime}`}>
+          <div className="gb-england-time" aria-label={`UK time: ${englandTime}`}>
+            <span className="gb-england-time-label">UK:</span>
+            {" "}
             <span>
               {englandHour}
               <span className="animate-blink">:</span>
               {englandMinute}
               {englandPeriod}
             </span>
-            {" "}
-            <span className="gb-england-time-label">England</span>
-            {" "}
-            <span>time</span>
           </div>
         </div>
       </div>
