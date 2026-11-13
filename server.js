@@ -63,7 +63,7 @@ async function fetchICSWithTimeout(url, timeoutMs, maxSize) {
 async function fetchAndParseICS(forceRefresh = false) {
   if (!GOOGLE_ICAL_URL) {
     console.warn('GOOGLE_ICAL_URL not set - returning empty events');
-    return { events: [], lastUpdated: new Date().toISOString(), isStale: false };
+    return eventsCache;
   }
 
   const now = Date.now();
@@ -76,6 +76,9 @@ async function fetchAndParseICS(forceRefresh = false) {
   try {
     console.log('Fetching ICS feed...');
     const icsText = await fetchICSWithTimeout(GOOGLE_ICAL_URL, ICS_FETCH_TIMEOUT, ICS_MAX_SIZE);
+    if (!icsText.includes('BEGIN:VCALENDAR') || !icsText.includes('END:VCALENDAR')) {
+      throw new Error('Invalid appointment calendar');
+    }
     const data = ical.sync.parseICS(icsText);
     
     const nowDate = new Date();
@@ -136,12 +139,7 @@ async function fetchAndParseICS(forceRefresh = false) {
   } catch (error) {
     console.error('Failed to fetch ICS:', error.message);
     
-    // Return stale cache if available
-    if (eventsCache.lastUpdated) {
-      return { ...eventsCache, isStale: true };
-    }
-    
-    return { events: [], lastUpdated: new Date().toISOString(), isStale: true };
+    return { ...eventsCache, isStale: true };
   }
 }
 
@@ -157,7 +155,7 @@ async function fetchHolidays() {
         const text = await fetchICSWithTimeout(US_HOLIDAYS_URL, ICS_FETCH_TIMEOUT, ICS_MAX_SIZE);
         parseHolidays(text); // Validate before replacing a working cache.
         holidayICS = text;
-        lastHolidayFetch = now;
+        lastHolidayFetch = Date.now();
       } catch (error) {
         console.warn('Failed to refresh US holidays:', error.message);
       }
@@ -178,8 +176,12 @@ export async function fetchCalendarEvents(forceRefresh = false) {
       return [];
     })
   ]);
+  const lastUpdated = !GOOGLE_ICAL_URL && lastHolidayFetch
+    ? new Date(lastHolidayFetch).toISOString()
+    : appointments.lastUpdated;
   return {
     ...appointments,
+    lastUpdated,
     events: [...appointments.events, ...holidays].sort((a, b) => {
       const startTime = (event) => new Date(event.isHoliday ? `${event.start}T00:00:00` : event.start).getTime();
       return startTime(a) - startTime(b);

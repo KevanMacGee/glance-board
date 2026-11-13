@@ -67,8 +67,9 @@ test('merges feeds, preserves appointments and their cache, and isolates holiday
   t.mock.timers.enable({ apis: ['Date'], now });
   const calls = { appointments: 0, holidays: 0 };
   let failHolidays = true;
-  let failAppointments = false;
+  let failAppointments = true;
   let invalidHolidays = false;
+  let invalidAppointments = false;
   const appointmentStart = new Date(2026, 10, 25, 14).toISOString();
   const appointmentEnd = new Date(2026, 10, 25, 15).toISOString();
   const icsDate = (date) => date.replace(/[-:]/g, '').replace('.000', '');
@@ -85,11 +86,19 @@ test('merges feeds, preserves appointments and their cache, and isolates holiday
     const isAppointment = url === process.env.GOOGLE_ICAL_URL;
     calls[isAppointment ? 'appointments' : 'holidays']++;
     if (isAppointment ? failAppointments : failHolidays) throw new Error('Simulated feed outage');
-    return new Response(isAppointment ? appointmentICS : invalidHolidays ? '<html>Error</html>' : holidayICS);
+    const invalidFeed = isAppointment ? invalidAppointments : invalidHolidays;
+    return new Response(invalidFeed ? '<html>Error</html>' : isAppointment ? appointmentICS : holidayICS);
   });
 
+  const firstFailure = await fetchCalendarEvents();
+  assert.equal(firstFailure.isStale, true);
+  assert.equal(firstFailure.lastUpdated, null);
+  assert.deepEqual(firstFailure.events, []);
+
+  failAppointments = false;
   const initial = await fetchCalendarEvents();
   assert.equal(initial.isStale, false);
+  assert.equal(initial.lastUpdated, new Date(now).toISOString());
   assert.equal(initial.events.length, 1); // A cold holiday failure must not lose appointments.
   const appointment = initial.events[0];
   assert.deepEqual(appointment, {
@@ -97,16 +106,22 @@ test('merges feeds, preserves appointments and their cache, and isolates holiday
     end: appointmentEnd, allDay: false,
     location: 'Clinic', description: 'Call reception'
   });
-  await fetchCalendarEvents(true);
+  t.mock.timers.setTime(now + 60 * 1000);
+  const cached = await fetchCalendarEvents();
+  assert.deepEqual(cached, initial);
   assert.deepEqual(calls, { appointments: 2, holidays: 1 });
 
+  const forced = await fetchCalendarEvents(true);
+  assert.equal(forced.lastUpdated, new Date(now + 60 * 1000).toISOString());
+  assert.deepEqual(calls, { appointments: 3, holidays: 1 });
+
   failHolidays = false;
-  t.mock.timers.setTime(now + 60 * 60 * 1000);
+  t.mock.timers.setTime(now + 61 * 60 * 1000);
   const merged = await fetchCalendarEvents();
   assert.deepEqual(merged.events.find(item => !item.isHoliday), appointment);
   assert.deepEqual(merged.events.map(item => item.title), ['Morning holiday', 'Doctor', 'Thanksgiving Day']);
   await fetchCalendarEvents(true);
-  assert.deepEqual(calls, { appointments: 4, holidays: 2 });
+  assert.deepEqual(calls, { appointments: 5, holidays: 2 });
 
   failHolidays = true;
   t.mock.timers.setTime(now + 25 * 60 * 60 * 1000);
@@ -115,18 +130,54 @@ test('merges feeds, preserves appointments and their cache, and isolates holiday
   assert.equal(staleHolidays.isStale, false); // Appointment freshness remains independent.
 
   failAppointments = true;
+  t.mock.timers.setTime(now + 25 * 60 * 60 * 1000 + 60 * 1000);
   const staleAppointments = await fetchCalendarEvents(true);
   assert.deepEqual(staleAppointments.events, merged.events);
   assert.equal(staleAppointments.isStale, true);
+  assert.equal(staleAppointments.lastUpdated, staleHolidays.lastUpdated);
 
+  failAppointments = false;
+  invalidAppointments = true;
   failHolidays = false;
   invalidHolidays = true;
   t.mock.timers.setTime(now + 26 * 60 * 60 * 1000);
-  const malformed = await fetchCalendarEvents();
+  const malformed = await fetchCalendarEvents(true);
   assert.deepEqual(malformed.events, merged.events); // Keep the last valid holiday cache.
+  assert.equal(malformed.lastUpdated, staleHolidays.lastUpdated);
+  assert.equal(malformed.isStale, true);
 
   // The full feed is cached, but its visible 45-day window is recomputed.
   t.mock.timers.setTime(new Date(2026, 10, 26, 12).getTime());
   const advanced = await fetchCalendarEvents();
   assert.deepEqual(advanced.events.filter(item => item.isHoliday).map(item => item.title), ['Thanksgiving Day']);
+});
+
+test('uses the actual holiday fetch time when no appointment feed is configured', async (t) => {
+  const appointmentUrl = process.env.GOOGLE_ICAL_URL;
+  process.env.GOOGLE_ICAL_URL = '';
+  t.after(() => {
+    if (appointmentUrl === undefined) delete process.env.GOOGLE_ICAL_URL;
+    else process.env.GOOGLE_ICAL_URL = appointmentUrl;
+  });
+  const { fetchCalendarEvents } = await import('../server.js?holidays-only');
+  const now = new Date(2026, 10, 24, 12).getTime();
+  t.mock.timers.enable({ apis: ['Date'], now });
+  let failHolidays = true;
+  const fetch = t.mock.method(globalThis, 'fetch', async () => {
+    if (failHolidays) throw new Error('Simulated holiday feed outage');
+    return new Response(calendar(event('thanksgiving', '20261126', 'Thanksgiving Day')));
+  });
+
+  assert.equal((await fetchCalendarEvents()).lastUpdated, null);
+
+  failHolidays = false;
+  const hourLater = now + 60 * 60 * 1000;
+  t.mock.timers.setTime(hourLater);
+  const refreshed = await fetchCalendarEvents();
+  assert.equal(refreshed.lastUpdated, new Date(hourLater).toISOString());
+  assert.equal(refreshed.events[0].title, 'Thanksgiving Day');
+
+  t.mock.timers.setTime(hourLater + 60 * 1000);
+  assert.deepEqual(await fetchCalendarEvents(true), refreshed);
+  assert.equal(fetch.mock.callCount(), 2);
 });

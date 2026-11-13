@@ -18,10 +18,10 @@ before(async () => {
 });
 after(async () => { await vite?.close(); });
 
-const cacheEvents = (t, events) => {
+const cacheEvents = (t, events, metadata = {}) => {
   const previous = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
   Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: {
-    getItem: () => JSON.stringify({ events, lastUpdated: new Date().toISOString(), cachedAt: Date.now() }),
+    getItem: () => JSON.stringify({ events, lastUpdated: new Date().toISOString(), cachedAt: Date.now(), ...metadata }),
   } });
   t.after(() => {
     if (previous) Object.defineProperty(globalThis, 'localStorage', previous);
@@ -65,4 +65,20 @@ test('labels holidays in another month without adding date headings', (t) => {
   assert.match(html, /<article class="gb-event gb-event-title gb-holiday" role="listitem">Dec 25th - Christmas Day<\/article>/);
   assert.equal((html.match(/<h2\b/g) || []).length, 1);
   assert.doesNotMatch(html, /All day|gb-event-date-block/);
+  assert.match(html, /No successful update yet/); // A legacy holidays-only cache may have a fallback timestamp.
+});
+
+test('keeps the verified fetch time when reopening a cached empty calendar', (t) => {
+  const lastUpdated = new Date(2026, 10, 24, 9, 15);
+  cacheEvents(t, [], { lastUpdated: lastUpdated.toISOString(), timestampVerified: true });
+  const html = renderToStaticMarkup(createElement(AppointmentsList));
+  assert.ok(html.includes(`Updated ${lastUpdated.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`));
+});
+
+test('does not show a timestamp before the first successful calendar fetch', (t) => {
+  cacheEvents(t, []);
+  t.mock.method(globalThis.localStorage, 'getItem', () => null);
+  const html = renderToStaticMarkup(createElement(AppointmentsList));
+  assert.match(html, /No successful update yet/);
+  assert.doesNotMatch(html, /Updated /);
 });
