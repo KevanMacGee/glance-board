@@ -189,7 +189,7 @@ export async function fetchCalendarEvents(forceRefresh = false) {
   };
 }
 
-async function createServer() {
+export function createCalendarApi() {
   const app = express();
   
   // API routes
@@ -203,12 +203,17 @@ async function createServer() {
       res.status(500).json({ error: 'Failed to fetch events', events: [], isStale: true });
     }
   });
+  return app;
+}
   
+async function createServer() {
+  const app = createCalendarApi();
+
   if (isProd) {
     // Production: serve static files
     const distPath = path.join(__dirname, 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+    app.get('/{*splat}', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   } else {

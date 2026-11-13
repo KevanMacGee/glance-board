@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, type ViteDevServer } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
@@ -8,14 +8,19 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
+  },
+  plugins: [
+    react(),
+    {
+      name: "calendar-api",
+      async configureServer(server: ViteDevServer) {
+        if (server.config.server.middlewareMode) return;
+        const { createCalendarApi } = await import("./server.js");
+        server.middlewares.use(createCalendarApi());
       },
     },
-  },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+    mode === "development" && componentTagger(),
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

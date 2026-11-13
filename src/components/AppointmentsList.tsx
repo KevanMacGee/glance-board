@@ -279,7 +279,9 @@ const AppointmentsList = () => {
           })}
 
           {events.length === 0 && !isInitialLoad && (
-            <div className="text-center py-12 text-gb-faint">No upcoming appointments</div>
+            <div className="text-center py-12 text-gb-faint">
+              {isStale ? "Could not load appointments" : "No upcoming appointments"}
+            </div>
           )}
         </div>
       </div>
