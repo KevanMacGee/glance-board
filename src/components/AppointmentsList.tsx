@@ -138,26 +138,23 @@ const AppointmentsList = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(!calendar);
   const [isStale, setIsStale] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const activeRequest = useRef<AbortController | null>(null);
+  const latestRequest = useRef(0);
   const events = calendar?.events ?? [];
 
-  const fetchEvents = async (isBackground = false, forceRefresh = false) => {
-    if (activeRequest.current && !forceRefresh) return;
-    activeRequest.current?.abort();
-    const request = new AbortController();
-    activeRequest.current = request;
-
+  const fetchEvents = async (forceRefresh = false) => {
+    const request = latestRequest.current + 1;
+    latestRequest.current = request;
     if (forceRefresh) {
       setIsRefreshing(true);
     }
     try {
       const url = forceRefresh ? "/api/events?force=true" : "/api/events";
-      const response = await fetch(url, { signal: request.signal });
+      const response = await fetch(url);
       if (!response.ok) throw new Error(`Calendar request failed (${response.status})`);
-      const data: APIResponse = await response.json();
-      if (request.signal.aborted) return;
+      const { events: fetchedEvents, lastUpdated, isStale }: APIResponse = await response.json();
+      if (request !== latestRequest.current) return;
 
-      const parsedEvents: CalendarEvent[] = data.events.map((e) => ({
+      const parsedEvents: CalendarEvent[] = fetchedEvents.map((e) => ({
         id: e.id,
         title: e.title,
         start: e.isHoliday ? parseISO(e.start) : new Date(e.start),
@@ -168,20 +165,19 @@ const AppointmentsList = () => {
         isHoliday: e.isHoliday,
       })).sort((a, b) => a.start.getTime() - b.start.getTime());
 
-      const lastUpdated = data.lastUpdated && Number.isFinite(Date.parse(data.lastUpdated)) ? data.lastUpdated : null;
       const nextCalendar = { events: parsedEvents, lastUpdated, cachedAt: Date.now() };
       setCalendar(previous => !lastUpdated && previous?.lastUpdated ? previous : nextCalendar);
-      setIsStale(data.isStale);
+      setIsStale(isStale);
       if (lastUpdated) saveCachedEvents(nextCalendar);
     } catch (error) {
-      if (request.signal.aborted) return;
-      console.error("Failed to fetch events:", error);
-      setIsStale(true);
+      if (request === latestRequest.current) {
+        console.error("Failed to fetch events:", error);
+        setIsStale(true);
+      }
     } finally {
-      if (activeRequest.current === request) {
-        activeRequest.current = null;
-        if (!isBackground) setIsInitialLoad(false);
-        if (forceRefresh) setIsRefreshing(false);
+      if (request === latestRequest.current) {
+        setIsInitialLoad(false);
+        setIsRefreshing(false);
       }
     }
   };
@@ -194,17 +190,14 @@ const AppointmentsList = () => {
 
     // Only fetch if cache is stale (older than 1 hour)
     if (cacheAge > CACHE_DURATION) {
-      fetchEvents(!!cached); // Background fetch if we have cached data
-    } else {
-      setIsInitialLoad(false);
+      fetchEvents();
     }
 
     // Refresh every hour
-    const interval = setInterval(() => fetchEvents(true), CACHE_DURATION);
+    const interval = setInterval(fetchEvents, CACHE_DURATION);
     return () => {
       clearInterval(interval);
-      activeRequest.current?.abort();
-      activeRequest.current = null;
+      latestRequest.current++;
     };
   }, []);
 
@@ -294,7 +287,7 @@ const AppointmentsList = () => {
       <footer className="px-6 py-3 gb-note border-t border-border/[0.08] flex justify-between items-center">
         <span>{lastUpdatedTime ? `Updated ${lastUpdatedTime}` : "No successful update yet"}</span>
         <button 
-          onClick={() => fetchEvents(false, true)}
+          onClick={() => fetchEvents(true)}
           disabled={isRefreshing}
           className="gb-note hover:text-white/70 transition-colors cursor-pointer disabled:opacity-50"
         >
