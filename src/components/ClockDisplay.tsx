@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { format } from "date-fns";
 
 const worldClocks = [
-  { label: "UK", timeZone: "Europe/London" },
-  { label: "NZ", timeZone: "Pacific/Auckland" },
-].map(({ label, timeZone }) => ({
+  { label: "UK", timeZone: "Europe/London", flag: "/flags/uk.svg" },
+  { label: "NZ", timeZone: "Pacific/Auckland", flag: "/flags/nz.svg" },
+].map(({ label, timeZone, flag }) => ({
   label,
+  flag,
   formatter: new Intl.DateTimeFormat("en-US", {
     timeZone,
     hour: "numeric",
@@ -44,11 +45,12 @@ const ClockDisplay = () => {
             <span>{dateLabel}</span>
           </div>
           <div className="gb-world-times">
-            {worldClocks.map(({ label, formatter }) => {
+            {worldClocks.map(({ label, flag, formatter }) => {
               const time = formatter.format(currentTime).replace(/\s/g, "").toLowerCase();
               const [hour, minuteAndPeriod] = time.split(":");
               return (
                 <div key={label} aria-label={`${label} time: ${time}`}>
+                  <img className="gb-world-time-flag" src={flag} alt="" />
                   <span className="gb-world-time-label">{label}:</span>{" "}
                   {hour}<span className="animate-blink">:</span>{minuteAndPeriod}
                 </div>
