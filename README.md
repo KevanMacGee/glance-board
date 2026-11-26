@@ -2,7 +2,7 @@
 
 ![Glance Board showing the clock, weather, and upcoming appointments](assets/Screenshot%202026-10-27%20172559.png)
 
-A minimalist dashboard designed for wall-mounted displays. Shows the time, weather, and upcoming calendar events at a glance. Intended to be singular and private, not exposed to the web. Calendar feed pulls from Google Calendar.
+Glance Board is a minimalist dashboard designed for wall-mounted displays. Shows the time, weather, and upcoming calendar events at a glance. Intended to be singular and private, not exposed to the web. Calendar feed pulls from Google Calendar.
 
 This project is meant to be a one-off for my personal use. It isn't designed for anyone else's use but you are welcome to do so. There are small to low security risks which I may not bother to fix as I am using this in a pretty secure setting. 
 
@@ -15,7 +15,7 @@ This project is meant to be a one-off for my personal use. It isn't designed for
 - **Calendar** — Upcoming events from Google Calendar (via ICS feed)
 - **US Holidays** — Date-and-name entries alongside appointments, from Google's public US Holidays feed; cached daily with no extra configuration
 - **Offline-First** — Caches data locally; gracefully handles network issues
-- **Kiosk Ready** — Designed for fullscreen display on dedicated screens
+- **Kiosk Ready** — Designed for full screen display on dedicated screens
 
 Weather icons provided by Basmilius https://github.com/basmilius/weather-icons
 
