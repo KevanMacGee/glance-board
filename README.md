@@ -43,6 +43,8 @@ GOOGLE_ICAL_URL=https://calendar.google.com/calendar/ical/.../basic.ics
 PORT=3000
 ```
 
+Note: Make sure to find your actual link as per below.
+
 **Finding your ICS URL:**
 
 1. Open [Google Calendar Settings](https://calendar.google.com)
